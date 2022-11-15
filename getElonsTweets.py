@@ -33,9 +33,8 @@ auth = tweepy.OAuthHandler(api_key, api_key_secret)
 auth.set_access_token(access_token, access_token_secret)
 api = tweepy.API(auth)
 
-# user = 'mrkiroiro'
 user = 'elonmusk'
-limit = 300
+limit = 1000
 tweets = tweepy.Cursor(api.user_timeline, screen_name = user, count = 200, tweet_mode = 'extended', exclude_replies=True, include_rts=False).items(limit)
 
 columns = ['User', 'Tweet']
