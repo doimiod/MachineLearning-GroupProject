@@ -27,24 +27,74 @@ api_key = config['twitter']['api_key']
 api_key_secret = config['twitter']['api_key_secret']
 access_token = config['twitter']['access_token']
 access_token_secret = config['twitter']['access_token_secret']
-consumer_key = config['twitter']['consumer_key']
-consumer_secret = config['twitter']['consumer_secret']
-
-# auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
-# auth.set_access_token(access_token, access_token_secret)
-# api = tweepy.API(auth, wait_on_rate_limit=True)
 
 # Authenticate
 auth = tweepy.OAuthHandler(api_key, api_key_secret)
 auth.set_access_token(access_token, access_token_secret)
 api = tweepy.API(auth)
 
-# using get_user with id
-put_your_user_id = "elonmusk"
-user1 = api.get_user(user_id = "elonmusk")
-print(user1.name)
+# user = 'mrkiroiro'
+user = 'elonmusk'
+limit = 300
+tweets = tweepy.Cursor(api.user_timeline, screen_name = user, count = 200, tweet_mode = 'extended', exclude_replies=True, include_rts=False).items(limit)
 
-# public_tweets = api.home_timeline()
+columns = ['User', 'Tweet']
+data = []
+
+for tweet in tweets:
+    data.append([tweet.user.screen_name, tweet.full_text])
+
+df = pd.DataFrame(data, columns=columns)
+
+print(df)
+# df.to_csv("dummy.csv")
+
+df.to_csv("ElonsAlltweets.csv", encoding='utf_8_sig')
+
+
+
+# with open("dummy.csv", errors='replace') as fin:
+#     with open('ElonsAlltweets.csv', 'w', encoding='cp932') as f_out:
+#         f_out.write(fin.read())
+    # read_data = fin.read()
+    # print(read_data)
+    # aaa = pd.DataFrame(fin)
+    # aaa.to_csv("aaa.csv")
+
+
+
+
+
+
+
+
+
+
+
+# class Listener(tweepy.Stream):
+
+#     tweets = []
+#     limit = 10
+
+#     def on_status(self, status):
+#         self.tweets.append(status)
+
+#         if len(self.tweets) == self.limit:
+#             self.disconnect()
+
+
+# stream_tweet = Listener(api_key, api_key_secret, access_token, access_token_secret)
+# user_id = api.get_user(screen_name = user).id
+# print(user_id)
+
+# stream_tweet.filter(follow = str(user_id))
+
+
+# for tweet in tweets:
+#     data.append([tweet.user.screen_name, tweet.full_text])
+    # print(tweet.full_text)
+
+# df = pd.DataFrame(data, columns=columns)
 
 # for tweet in public_tweets:
 #     print(tweet.text)
@@ -53,11 +103,6 @@ print(user1.name)
 #     print(tweet.user.screen_name)
 #     print(tweet.user.name)
 #     print(tweet.user.followers_count)
-
-
-
-
-
 
 
 # Output: 'QuantInsti'
