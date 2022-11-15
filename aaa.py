@@ -9,31 +9,31 @@ from collections import Counter
 
 # load_dotenv(verbose=True)  # Throws error if no .env file is found
 
-consumer_key = "T0pwTDBvY0NmQUlNRTNEY0xPNTU6MTpjaQ"
-consumer_secret = "GIAoAfpa5jdHAODnq2OJYCkTpi20qA66y4xVodfoWtaTBuzqig"
+consumer_key = "K1YzLpWNN4FqwW8s1oEb2w9hr"
+consumer_secret = "xbdDA1xDnUkipmeJ7CevCKhtwUrw7QEE6yYjYjvrPjPmw6TUS2"
 access_token = "1439151678985580546-doTMyvE7Qa6lgPcJpdlMwrS4JzZYay"
 access_token_secret = "SJ4NOQqnnTYtfIB94Au6CXxAN1OiBGSsi9wvOfEewdCBv"
 bearer_token = "AAAAAAAAAAAAAAAAAAAAALPLjAEAAAAA0ZhQ2VUCVvxtxlka1vFoa2EjH9k%3DzQLLpZ4Ib1FglUPw1q94l2osv8uwp3pIEIQx7hBBjrfLvSSGnN"
 
 # Argparse for CLI options. Run `python3 replies.py -h` to see the list of arguments.
-# parser = argparse.ArgumentParser()
-# parser.add_argument(
-#     "-t",
-#     "--tweet_id",
-#     required=True,
-#     help="ID of the Tweet for which you want to pull replies",
-# )
-# parser.add_argument(
-#     "-s",
-#     "--start_time",
-#     help="The oldest UTC timestamp from which the replies will be provided. Format: YYYY-MM-DDTHH:mm:ssZ; for example: 2021-12-04T01:30:00Z. If unspecified, will default to returning replies from up to 30 days ago.",
-# )
-# parser.add_argument(
-#     "-e",
-#     "--end_time",
-#     help="The newest, most recent UTC timestamp to which the replies will be provided. Format: YYYY-MM-DDTHH:mm:ssZ; for example: 2021-12-04T01:30:00Z. If unspecified, will default to [now - 30 seconds].",
-# )
-# args = parser.parse_args()
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    "-t",
+    "--tweet_id",
+    required=True,
+    help="ID of the Tweet for which you want to pull replies",
+)
+parser.add_argument(
+    "-s",
+    "--start_time",
+    help="The oldest UTC timestamp from which the replies will be provided. Format: YYYY-MM-DDTHH:mm:ssZ; for example: 2021-12-04T01:30:00Z. If unspecified, will default to returning replies from up to 30 days ago.",
+)
+parser.add_argument(
+    "-e",
+    "--end_time",
+    help="The newest, most recent UTC timestamp to which the replies will be provided. Format: YYYY-MM-DDTHH:mm:ssZ; for example: 2021-12-04T01:30:00Z. If unspecified, will default to [now - 30 seconds].",
+)
+args = parser.parse_args()
 
 
 def bearer_oauth(r):
@@ -44,16 +44,16 @@ def bearer_oauth(r):
 
 def get_parameters():
     params = {
-        "query": f"conversation_id:elonmusk",
+        "query": f"conversation_id:{args.tweet_id}",
         "tweet.fields": "in_reply_to_user_id,author_id,conversation_id,entities",
         "max_results": "500",
     }
-    # if args.start_time:
-    #     params.update(start_time=args.start_time)
-    # if args.end_time:
-    #     params.update(end_time=args.end_time)
+    if args.start_time:
+        params.update(start_time=args.start_time)
+    if args.end_time:
+        params.update(end_time=args.end_time)
 
-    return ("2022-11-THH:mm:ssZ", "YYYY-MM-DDTHH:mm:ssZ", "elonmusk")
+    return (params, args.tweet_id)
 
 
 def get_replies(parameters):

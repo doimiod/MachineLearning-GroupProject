@@ -27,7 +27,12 @@ api_key = config['twitter']['api_key']
 api_key_secret = config['twitter']['api_key_secret']
 access_token = config['twitter']['access_token']
 access_token_secret = config['twitter']['access_token_secret']
+consumer_key = config['twitter']['consumer_key']
+consumer_secret = config['twitter']['consumer_secret']
 
+# auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+# auth.set_access_token(access_token, access_token_secret)
+# api = tweepy.API(auth, wait_on_rate_limit=True)
 
 # Authenticate
 auth = tweepy.OAuthHandler(api_key, api_key_secret)
@@ -35,19 +40,19 @@ auth.set_access_token(access_token, access_token_secret)
 api = tweepy.API(auth)
 
 # using get_user with id
-# put_your_user_id = "elonmusk"
-# user1 = api.get_user(user_id = put_your_user_id)
-# print(user1.name)
+put_your_user_id = "elonmusk"
+user1 = api.get_user(user_id = "elonmusk")
+print(user1.name)
 
-public_tweets = api.home_timeline()
+# public_tweets = api.home_timeline()
 
-for tweet in public_tweets:
-    print(tweet.text)
-    print(tweet.created_at)
-    print(tweet.id)
-    print(tweet.user.screen_name)
-    print(tweet.user.name)
-    print(tweet.user.followers_count)
+# for tweet in public_tweets:
+#     print(tweet.text)
+#     print(tweet.created_at)
+#     print(tweet.id)
+#     print(tweet.user.screen_name)
+#     print(tweet.user.name)
+#     print(tweet.user.followers_count)
 
 
 
