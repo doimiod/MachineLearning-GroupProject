@@ -34,21 +34,21 @@ auth.set_access_token(access_token, access_token_secret)
 api = tweepy.API(auth)
 
 user = 'elonmusk'
-limit = 1000
+limit = 10000
 tweets = tweepy.Cursor(api.user_timeline, screen_name = user, count = 200, tweet_mode = 'extended', exclude_replies=True, include_rts=False).items(limit)
 
-columns = ['User', 'Tweet']
+columns = ['Date','Tweet']
 data = []
 
 for tweet in tweets:
-    data.append([tweet.user.screen_name, tweet.full_text])
+    data.append([tweet.created_at, tweet.full_text])
 
 df = pd.DataFrame(data, columns=columns)
 
 print(df)
 # df.to_csv("dummy.csv")
 
-df.to_csv("ElonsAlltweets.csv", encoding='utf_8_sig')
+df.to_csv("ElonsAllTweets.csv", encoding='utf_8_sig')
 
 
 
