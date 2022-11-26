@@ -20,7 +20,9 @@ import tweepy
 
 # Read the config file
 config = configparser.ConfigParser()
+#CHANGE LOCATION
 config.read('5Y Masters\Machine Learning\MachineLearning-GroupProject\importantFiles\config.ini')
+#CHANGE LOCATION
 
 # Read the values
 api_key = config['twitter']['api_key']
@@ -34,7 +36,7 @@ auth.set_access_token(access_token, access_token_secret)
 api = tweepy.API(auth)
 
 user = 'elonmusk'
-limit = 100
+limit = 1000
 # tweets = tweepy.Cursor(api.user_timeline, screen_name = user, count = 200, tweet_mode = 'extended', exclude_replies=True, include_rts=False,).items(limit)
 page_no = 1
 pages = tweepy.Cursor(api.user_timeline, screen_name=user, tweet_mode='extended').pages(limit)
@@ -56,8 +58,9 @@ df = pd.DataFrame(data, columns=columns)
 print(df)
 # df.to_csv("dummy.csv")
 
+#CHANGE LOCATION
 df.to_csv("5Y Masters\Machine Learning\MachineLearning-GroupProject\importantFiles\ElonsAlltweets.csv", encoding='utf_8_sig')
-
+#CHANGE LOCATION
 
 
 # with open("dummy.csv", errors='replace') as fin:
