@@ -20,7 +20,7 @@ import tweepy
 
 # Read the config file
 config = configparser.ConfigParser()
-config.read('config.ini')
+config.read('5Y Masters\Machine Learning\MachineLearning-GroupProject\importantFiles\config.ini')
 
 # Read the values
 api_key = config['twitter']['api_key']
@@ -34,21 +34,29 @@ auth.set_access_token(access_token, access_token_secret)
 api = tweepy.API(auth)
 
 user = 'elonmusk'
-limit = 10000
-tweets = tweepy.Cursor(api.user_timeline, screen_name = user, count = 200, tweet_mode = 'extended', exclude_replies=True, include_rts=False).items(limit)
+limit = 100
+# tweets = tweepy.Cursor(api.user_timeline, screen_name = user, count = 200, tweet_mode = 'extended', exclude_replies=True, include_rts=False,).items(limit)
+page_no = 1
+pages = tweepy.Cursor(api.user_timeline, screen_name=user, tweet_mode='extended').pages(limit)
 
 columns = ['Date','Tweet']
 data = []
 
-for tweet in tweets:
-    data.append([tweet.created_at, tweet.full_text])
+# Iterate through the pages and print the text of the tweets
+for page in pages:    
+    for i in range(len(page)):
+        # print(f"{i+1} {page[i].created_at, page[i].full_text } \n")
+        data.append([page[i].created_at, page[i].full_text])
+    print(f"*********End of Page {page_no}*********")
+    page_no += 1
+
 
 df = pd.DataFrame(data, columns=columns)
 
 print(df)
 # df.to_csv("dummy.csv")
 
-df.to_csv("ElonsAllTweets.csv", encoding='utf_8_sig')
+df.to_csv("5Y Masters\Machine Learning\MachineLearning-GroupProject\importantFiles\ElonsAlltweets.csv", encoding='utf_8_sig')
 
 
 
