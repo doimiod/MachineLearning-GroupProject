@@ -33,9 +33,11 @@ auth = tweepy.OAuthHandler(api_key, api_key_secret)
 auth.set_access_token(access_token, access_token_secret)
 api = tweepy.API(auth)
 
-user = 'elonmusk'
+# user = 'elonmusk'
 limit = 10000
-tweets = tweepy.Cursor(api.user_timeline, screen_name = user, count = 200, tweet_mode = 'extended', exclude_replies=True, include_rts=False).items(limit)
+
+# tweets = tweepy.Cursor(api.user_timeline, screen_name = user, count = 200, tweet_mode = 'extended', exclude_replies=True, include_rts=False, since_id = 12345).items(limit)
+tweets = tweepy.Cursor(api.search_full_archive, label='test', query = "(from:elonmusk) until:2022-11-27 since:2022-01-01", count = 200, tweet_mode = 'extended', exclude_replies=True, include_rts=False,).items(limit)
 
 columns = ['Date','Tweet']
 data = []
