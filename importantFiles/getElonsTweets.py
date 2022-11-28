@@ -18,10 +18,13 @@ import time
 import configparser
 import tweepy
 
+#End with slash / if using directory or leave blank ""
+Address = "5Y Masters\Machine Learning\MachineLearning-GroupProject\importantFiles/"
+
 # Read the config file
 config = configparser.ConfigParser()
 #CHANGE LOCATION
-config.read('5Y Masters\Machine Learning\MachineLearning-GroupProject\importantFiles\config.ini')
+config.read('{}config.ini'.format(Address))
 #CHANGE LOCATION
 
 # Read the values
@@ -59,7 +62,7 @@ print(df)
 # df.to_csv("dummy.csv")
 
 #CHANGE LOCATION
-df.to_csv("5Y Masters\Machine Learning\MachineLearning-GroupProject\importantFiles\ElonsAlltweets.csv", encoding='utf_8_sig')
+df.to_csv("{}ElonsAlltweets.csv".format(Address), encoding='utf_8_sig')
 #CHANGE LOCATION
 
 
