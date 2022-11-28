@@ -5,7 +5,7 @@ import time
 from dateutil import parser
 import matplotlib.pyplot as plt
 
-#End with slash if using directory or leave blank ""
+#End with slash / if using directory or leave blank ""
 Address = "5Y Masters\Machine Learning\MachineLearning-GroupProject\importantFiles/"
 
 
@@ -32,14 +32,18 @@ Class = []
 #classes for stocks between dates. need to assign the class to the tweets at the relevant dates.
 
 for i in range(1,S_size):
+    #stock increases
     if(stock_data['Close'][i]-stock_data['Close'][i-1] > stock_data['Close'][i-1]*0.05):
         Class.append([stock_data['Date'][i-1], 1])
+    #stock decreases
     elif(stock_data['Close'][i]-stock_data['Close'][i-1] < -stock_data['Close'][i-1]*0.05 ):
         Class.append([stock_data['Date'][i-1], -1])
+    #undecided
     else:
         Class.append([stock_data['Date'][i-1], 0])
     print("the day {}, previous day {}, class {}".format(stock_data['Close'][i],stock_data['Close'][i-1],Class[i-1]))
 
+#sum of individual classes
 class1 = 0
 class1p = 0
 class_n = 0
@@ -53,14 +57,15 @@ for i in range(0,S_size-1):
 
 print("amt of 1: {}, amt of -1: {}, amt of 0: {}".format(class1, class1p, class_n))
 
+#store classes
 columns = ['Date', 'Class']
-
 df = pd.DataFrame(Class, columns=columns)
 df.to_csv("{}Classes.csv".format(Address), encoding='utf_8_sig')
+
+#dont delete the below code lol
 
 # z = np.array(y[size-1], dtype=np.datetime64)
 #date
 # print(z)
-# #arithemetic with date
+# arithemetic with date
 # print(z-np.timedelta64(1,'D'))
-x = 1
