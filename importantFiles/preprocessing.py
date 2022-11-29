@@ -5,25 +5,34 @@ import time
 from dateutil import parser
 import matplotlib.pyplot as plt
 
-#End with slash / if using directory or leave blank ""
+# #End with slash / if using directory or leave blank ""
 Address = "5Y Masters\Machine Learning\MachineLearning-GroupProject\importantFiles/"
 
-
-#CAREFUL only for deprecation of datetime64
+# #CAREFUL only for deprecation of datetime64
 import warnings
 warnings.filterwarnings("ignore")
-#CAREFUL
+# #CAREFUL
 
 Elon_data = pd.read_csv("{}ElonsTweets.csv".format(Address))
 stock_data  = pd.read_csv("{}TSLA.csv".format(Address))
 
-print(stock_data['Date'])
+# print(stock_data['Date'])
 
 E_date = Elon_data['Date']
 S_date = stock_data['Date']
 E_size = len(E_date)
 S_size = len(S_date)
 Class = []
+
+
+#dont delete the below code lol/ testing time arithemetic
+# z = np.array(E_date[E_size-1], dtype=np.datetime64)
+# print(z)
+
+# print(z+np.timedelta64(5,'D'))
+# d = z+np.timedelta64(5,'D')
+# if(z+np.timedelta64(5,'D') == d):
+#     print('works')
 
 #starting point
 #class increases: 1
@@ -42,6 +51,20 @@ for i in range(1,S_size):
     else:
         Class.append([stock_data['Date'][i-1], 0])
     print("the day {}, previous day {}, class {}".format(stock_data['Close'][i],stock_data['Close'][i-1],Class[i-1]))
+
+initial_date = E_date[E_size-1]
+
+ELon_class = []
+for i in Elon__
+
+for i in range(1,S_size):
+    for j in range(0,E_size):
+        #exit if all tweets for the date is assigned
+        if(E_date[j]>S_date[i]):
+            break
+        #skip if the for loop hasnt reached the stock date.
+        
+
 
 #sum of individual classes
 class1 = 0
@@ -62,10 +85,5 @@ columns = ['Date', 'Class']
 df = pd.DataFrame(Class, columns=columns)
 df.to_csv("{}Classes.csv".format(Address), encoding='utf_8_sig')
 
-#dont delete the below code lol
 
-# z = np.array(y[size-1], dtype=np.datetime64)
-#date
-# print(z)
-# arithemetic with date
-# print(z-np.timedelta64(1,'D'))
+
