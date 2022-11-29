@@ -11,8 +11,8 @@ from sklearn.model_selection import train_test_split
 
 df = pd.read_csv('/Users/doimasanari/Desktop/datasetMasanariDoi.csv')
 
-x = df.iloc[:,1]  # construct a matrix coniaing tweets
-y = df.iloc[:,2]  # construct a matrix coniaing -1, 0 or 1
+x = df.iloc[:,1]  # construct a matrix containing tweets
+y = df.iloc[:,2]  # construct a matrix containing -1, 0 or 1
 
 xTrain, xTest, yTrain, yTest = train_test_split(x, y, test_size=0.2) # split the data for training and testing.
 xTest = np.array(xTest) #make an array of x test data

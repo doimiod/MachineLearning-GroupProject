@@ -1,4 +1,5 @@
 import snscrape.modules.twitter as sntwitter
+import numpy as np
 import pandas as pd
 #import external pandas_datareader library with alias of web
 
@@ -25,6 +26,7 @@ for tweet in sntwitter.TwitterSearchScraper(query).get_items():
             tweets.append([tweet.date, tweet.username, tweet.content])
     except:
         print("some weird error")
+np.flip(tweets,0)
 df = pd.DataFrame(tweets, columns=['Date', 'User', 'Tweet'])
 
 print(df)
