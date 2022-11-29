@@ -54,8 +54,9 @@ for i in range(1,S_size):
 
 initial_date = E_date[E_size-1]
 
-ELon_class = []
-for i in Elon__
+Elon_class = []
+for i in range(0, E_size):
+    Elon_class.append([])
 
 for i in range(1,S_size):
     for j in range(0,E_size):
