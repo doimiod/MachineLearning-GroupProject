@@ -9,7 +9,7 @@ from sklearn.svm import LinearSVC
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 
-df = pd.read_csv('/Users/doimasanari/Desktop/datasetMasanariDoi.csv')
+df = pd.read_csv('') # <- put your file location here
 
 x = df.iloc[:,1]  # construct a matrix coniaing tweets
 y = df.iloc[:,2]  # construct a matrix coniaing -1, 0 or 1
