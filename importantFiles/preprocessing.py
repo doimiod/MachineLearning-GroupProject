@@ -6,7 +6,7 @@ from dateutil import parser
 import matplotlib.pyplot as plt
 
 # #End with slash / if using directory or leave blank ""
-Address = "5Y Masters\Machine Learning\MachineLearning-GroupProject\importantFiles/"
+Address = "importantFiles/"
 
 # #CAREFUL only for deprecation of datetime64
 import warnings
@@ -56,13 +56,18 @@ initial_date = E_date[E_size-1]
 
 Elon_class = []
 for i in range(0, E_size):
-    Elon_class.append([])
+    Elon_class.append([E_date[i], Elon_data['Tweet'][i],""])
 
 for i in range(1,S_size):
     for j in range(0,E_size):
         #exit if all tweets for the date is assigned
-        if(E_date[j]>S_date[i]):
+        try:
+            if(E_date[j]>S_date[i+1]):
+                break
+        except:
             break
+        
+
         #skip if the for loop hasnt reached the stock date.
         
 
