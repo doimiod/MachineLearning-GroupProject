@@ -8,11 +8,30 @@ import matplotlib.pyplot as plt
 from sklearn.svm import LinearSVC
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
+import nltk
+from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
 
-df = pd.read_csv('/Users/doimasanari/Desktop/datasetMasanariDoi.csv')
+df = pd.read_csv('') # <- put your file location here
 
 x = df.iloc[:,1]  # construct a matrix containing tweets
 y = df.iloc[:,2]  # construct a matrix containing -1, 0 or 1
+
+# a text featuring 
+
+reviews = df.review.str.cat(sep=' ')
+#function to split text into word
+tokens = word_tokenize(reviews)
+vocabulary = set(tokens)
+print(len(vocabulary))
+frequency_dist = nltk.FreqDist(tokens)
+sorted(frequency_dist,key=frequency_dist.__getitem__, reverse=True)[0:50]
+# remove the stop words to cleanup the text
+stop_words = set(stopwords.words('english'))            
+tokens = [w for w in tokens if not w in stop_words]
+
+# text featuring ends
+
 
 xTrain, xTest, yTrain, yTest = train_test_split(x, y, test_size=0.2) # split the data for training and testing.
 xTest = np.array(xTest) #make an array of x test data
