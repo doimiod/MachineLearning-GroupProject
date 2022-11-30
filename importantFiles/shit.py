@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 #import external pandas_datareader library with alias of web
 
-Address = "5Y Masters\Machine Learning\MachineLearning-GroupProject\importantFiles/"
+Address = "Machine Learning\MachineLearning-GroupProject-1\importantFiles/"
 # query = "(from:elonmusk) until:2022-11-27 since:2019-01-01"
 query = "(from:elonmusk) since:2010-06-29 -filter:replies"
 tweets = []
@@ -26,7 +26,7 @@ for tweet in sntwitter.TwitterSearchScraper(query).get_items():
             tweets.append([tweet.date, tweet.username, tweet.content])
     except:
         print("some weird error")
-np.flip(tweets,0)
+tweets = np.flip(tweets,0)
 df = pd.DataFrame(tweets, columns=['Date', 'User', 'Tweet'])
 
 print(df)
@@ -36,8 +36,8 @@ E_date = df['Date']
 E_size = len(E_date)
 
 import yfinance as yf
-start_date = E_date[E_size-1]
-end_date = E_date[1]
+start_date = E_date[1]
+end_date = E_date[E_size-1]
 ticker = 'TSLA'
 data = yf.download(ticker, start_date, end_date)
 data["Date"] = data.index
