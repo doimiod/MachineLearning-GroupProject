@@ -63,6 +63,7 @@ for i in range(0, E_size):
 
 import yfinance as yf
 
+
 class_found=False
 class_val = 0
 ticker = 'TSLA'
