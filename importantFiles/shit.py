@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 #import external pandas_datareader library with alias of web
 
-Address = "Machine Learning\MachineLearning-GroupProject-1\importantFiles/"
+Address = "importantFiles/"
 # query = "(from:elonmusk) until:2022-11-27 since:2019-01-01"
 query = "(from:elonmusk) since:2010-06-29 -filter:replies"
 tweets = []
