@@ -12,7 +12,7 @@ import nltk
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 
-df = pd.read_csv('') # <- put your file location here
+df = pd.read_csv('importantFiles\Elon_class.csv') # <- put your file location here
 
 x = df.iloc[:,1]  # construct a matrix containing tweets
 y = df.iloc[:,2]  # construct a matrix containing -1, 0 or 1
