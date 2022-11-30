@@ -16,6 +16,7 @@ warnings.filterwarnings("ignore")
 # #CAREFUL
 
 #Initialization
+threshold = 0.01
 Elon_class_avail = True
 Elon_data_avail = True
 update_tweet = False
@@ -24,10 +25,15 @@ Elon_class = []
 Elon_data = []
 try:
     Elon_data = pd.read_csv("{}ElonsTweets.csv".format(Address))
+    E_date = Elon_data['Date']
+    E_date = np.array(E_date, dtype=np.datetime64)
+    E_date = E_date.astype(datetime.datetime)
+    E_date = [x.strftime('%Y-%m-%d') for x in E_date]
+    E_size = len(E_date)
 except:
     Elon_data_avail = False
 try:
-    Elon_class = pd.read_csv("{}Elons_class.csv".format(Address))
+    Elon_class = pd.read_csv("{}Elon_class.csv".format(Address))
 except:
     Elon_avail = False
 
@@ -100,7 +106,7 @@ if(not Elon_class_avail or update_class):
     class_found=False
     class_val = 0
     ticker = 'TSLA'
-    threshold = 0.05
+    
     for i in range(0,E_size):
         #find class
         count=i
@@ -147,18 +153,41 @@ if(not Elon_class_avail or update_class):
     df = pd.DataFrame(Elon_class, columns=columns)
     df.to_csv("{}Elon_class.csv".format(Address), encoding='utf_8_sig')
 else:
-    x=1
+    if(Elon_class_avail):
+        print("class available")
+    else:
+        print("class unavailable")
+    for i in range(0, len(Elon_class)):
+        try:
+            j=0
+            
+            while(E_date[i+j]<=E_date[i]):
+                j=j+1
+        except:
+            Elon_class['Date'][i] = 0
+            break
+
+        if(Elon_class['Close_price'][i+j]-Elon_class['Close_price'][i] > Elon_class['Close_price'][i]*threshold):
+            class_val = 1
+        elif(Elon_class['Close_price'][i+j]-Elon_class['Close_price'][i] < -Elon_class['Close_price'][i]*threshold):
+            class_val = -1
+        else:
+            class_val = 0
+        Elon_class['Class'][i] = class_val
+    Elon_class.to_csv("{}Elon_class.csv".format(Address), encoding='utf_8_sig')
+
+Elon_class = pd.read_csv("{}Elon_class.csv".format(Address))
 
 #sum of individual classes
 class1 = 0
 class1p = 0
 class_n = 0
 for i in range(0,len(Elon_class)-1):
-    if(Elon_class[i][2] == 1):
+    if(Elon_class['Class'][i] == 1):
         class1 = class1+1
-    if(Elon_class[i][2] == -1):
+    if(Elon_class['Class'][i] == -1):
         class1p = class1p+1
-    if(Elon_class[i][2] == 0):
+    if(Elon_class['Class'][i] == 0):
         class_n = class_n+1
 
 print("amt of 1: {}, amt of -1: {}, amt of 0: {}".format(class1, class1p, class_n))
