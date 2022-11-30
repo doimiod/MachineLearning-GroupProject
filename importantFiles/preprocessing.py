@@ -93,7 +93,7 @@ if(not Elon_class_avail or update_class):
     initial_date = E_date[E_size-1]
 
     for i in range(0, E_size):
-        Elon_class.append([E_date[i], Elon_data['Tweet'][i],""])
+        Elon_class.append([E_date[i], Elon_data['Tweet'][i],"",""])
 
     import yfinance as yf
 
@@ -133,7 +133,7 @@ if(not Elon_class_avail or update_class):
 
         #assign class
         Elon_class[i][2] = class_val
-
+        Elon_class[i][3] = data['Close'][0]
         #if a new date is next, set class_found to false, it may throw error if we go out of bounds
         try:
             if(E_date[i+1]>E_date[i]):
@@ -143,7 +143,7 @@ if(not Elon_class_avail or update_class):
             x=1
 
     #store Elon_data
-    columns = ['Date','Tweet', 'Class']
+    columns = ['Date','Tweet', 'Class', 'Close_price']
     df = pd.DataFrame(Elon_class, columns=columns)
     df.to_csv("{}Elon_class.csv".format(Address), encoding='utf_8_sig')
 else:
