@@ -21,6 +21,7 @@ df = pd.read_csv('/Users/doimasanari/Desktop/MachineLearning-GroupProject/import
 
 x = df['Tweet']  # construct a matrix containing tweets
 y = df['Class']  # construct a matrix containing -1, 0 or 1
+date = df['Date'] # construct a matrix containing the date
 
 Tweets = df['Tweet'].str.cat(sep=' ')
 #function to split text into word
@@ -35,7 +36,24 @@ tokens = [w for w in tokens if not w in stop_words]
 # text featuring ends
 print(x)
 
-xTrain, xTest, yTrain, yTest = train_test_split(x, y, test_size=0.2) # split the data for training and testing.
+# xTrain, xTest, yTrain, yTest = train_test_split(x, y, test_size=0.2) # split the data for training and testing.
+
+xTrain = []
+xTest = []
+yTrain = []
+yTest = []
+split = len(df)*0.8
+
+for i in range(len(df)):
+
+    if(i <= split):
+        xTrain.append(x[i])
+        yTrain.append(y[i])
+    else:
+        xTest.append(x[i])
+        yTest.append(y[i])    
+    
+
 print(type(xTrain))
 xTest = np.array(xTest) #make an array of x test data
 
