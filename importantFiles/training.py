@@ -17,7 +17,7 @@ nltk.download('stopwords')
 from sklearn.feature_extraction.text import TfidfVectorizer
 from  sklearn.metrics  import accuracy_score
 
-# #CAREFUL only for deprecation of datetime64
+# #CAREFUL only for warnings
 import warnings
 warnings.filterwarnings("ignore")
 # #CAREFUL
@@ -149,6 +149,14 @@ def baseline_mostFrequent(xTrain, yTrain, xTest, yTest):
 #         Xnew = Xtrain[test,:]
 #     mean_error.append(np.array(temp).mean())
 #     std_error.append(np.array(temp).std())
+# #CHOSEN ORDER OF POLYNOMIAL
+# deg = 2
+# #plot data
+# plt.errorbar(polyDegree, mean_error, yerr=std_error, ecolor ="red", marker = "o", ms=3)
+# plt.xlabel("Degree of polynomial")
+# plt.ylabel("f1 score")
+# plt.title("Logistic regression")
+# plt.show()
 
 logisticRegression(0.1,xTrain, yTrain, xTest, yTest)
 # linear_SVC (0, xTrain, yTrain)
