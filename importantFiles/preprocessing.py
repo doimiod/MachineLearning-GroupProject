@@ -5,6 +5,7 @@ import datetime
 import time
 from dateutil import parser
 import matplotlib.pyplot as plt
+import snscrape.modules.twitter as sntwitter
 
 # #End with slash / if using directory or leave blank ""
 Address = "importantFiles/"
@@ -14,29 +15,73 @@ import warnings
 warnings.filterwarnings("ignore")
 # #CAREFUL
 
-Elon_data = pd.read_csv("{}ElonsTweets.csv".format(Address))
-stock_data  = pd.read_csv("{}TSLA.csv".format(Address))
+#Initialization
+threshold = 0.01
+Elon_class_avail = True
+Elon_data_avail = True
+update_tweet = False
+update_class = False
+Elon_class = []
+Elon_data = []
+try:
+    Elon_data = pd.read_csv("{}ElonsTweets.csv".format(Address))
+    E_date = Elon_data['Date']
+    E_date = np.array(E_date, dtype=np.datetime64)
+    E_date = E_date.astype(datetime.datetime)
+    E_date = [x.strftime('%Y-%m-%d') for x in E_date]
+    E_size = len(E_date)
+except:
+    Elon_data_avail = False
+try:
+    Elon_class = pd.read_csv("{}Elon_class.csv".format(Address))
+except:
+    Elon_avail = False
 
-# print(stock_data['Date'])
+if(Elon_data_avail):
+    val = input("Elon's tweets are found, update it? [y/n]")
+    if (val == 'y'):
+        update_tweet = True
 
-E_date = Elon_data['Date']
-E_date = np.array(E_date, dtype=np.datetime64)
-E_date = E_date.astype(datetime.datetime)
-E_date = [x.strftime('%Y-%m-%d') for x in E_date]
-S_date = stock_data['Date']
-E_size = len(E_date)
-S_size = len(S_date)
-Class = []
+#________________GATHERING___TWEETS_______________________________
+if(not Elon_data_avail or update_tweet):
+    print(" Gathering Tweets...")
+    query = "(from:elonmusk) since:2010-06-29 -filter:replies"
+    tweets = []
+    limit = 100000000000
 
+    i=0
+    for tweet in sntwitter.TwitterSearchScraper(query).get_items():
 
-#dont delete the below code lol/ testing time arithemetic
-# z = np.array(E_date[E_size-1], dtype=np.datetime64)
-# print(z)
+        if(i%100 == 0):
+            print("progress: {} tweets".format(i))
+            print("lenght of tweets: {} \n".format(len(tweets)))
+        i = i+1
+        # print(vars(tweet))
+        # break
+        try:
+            if len(tweets) == limit:
+                break
+            else:
+                tweets.append([tweet.date, tweet.username, tweet.content])
+        except:
+            print("some weird error")
+    tweets = np.flip(tweets,0)
+    df = pd.DataFrame(tweets, columns=['Date', 'User', 'Tweet'])
 
-# print(z+np.timedelta64(5,'D'))
-# d = z+np.timedelta64(5,'D')
-# if(z+np.timedelta64(5,'D') == d):
-#     print('works')
+    print(df)
+
+    df.to_csv("{}ElonsTweets.csv".format(Address), encoding='utf_8_sig')
+    E_date = df['Date']
+    E_size = len(E_date)
+else:
+    if(update_tweet):
+        print("tweets updated")
+
+#_________________________creating_data_for_training____________________
+
+val = input("Elon's classes are found, update it? [y/n]")
+if (val == 'y'):
+    update_class = True
 
 #starting point
 #class increases: 1
@@ -44,94 +89,105 @@ Class = []
 #class undecided: 0
 #classes for stocks between dates. need to assign the class to the tweets at the relevant dates.
 
-# for i in range(1,S_size):
-#     #stock increases
-#     if(stock_data['Close'][i]-stock_data['Close'][i-1] > stock_data['Close'][i-1]*0.05):
-#         Class.append([stock_data['Date'][i-1], 1])
-#     #stock decreases
-#     elif(stock_data['Close'][i]-stock_data['Close'][i-1] < -stock_data['Close'][i-1]*0.05 ):
-#         Class.append([stock_data['Date'][i-1], -1])
-#     #undecided
-#     else:
-#         Class.append([stock_data['Date'][i-1], 0])
-#     print("the day {}, previous day {}, class {}".format(stock_data['Close'][i],stock_data['Close'][i-1],Class[i-1]))
+if(not Elon_class_avail or update_class):
+    E_date = Elon_data['Date']
+    E_date = np.array(E_date, dtype=np.datetime64)
+    E_date = E_date.astype(datetime.datetime)
+    E_date = [x.strftime('%Y-%m-%d') for x in E_date]
+    E_size = len(E_date)
 
-initial_date = E_date[E_size-1]
-Elon_class = []
-for i in range(0, E_size):
-    Elon_class.append([E_date[i], Elon_data['Tweet'][i],""])
+    initial_date = E_date[E_size-1]
 
-import yfinance as yf
+    for i in range(0, E_size):
+        Elon_class.append([E_date[i], Elon_data['Tweet'][i],"",""])
 
+    import yfinance as yf
 
-class_found=False
-class_val = 0
-ticker = 'TSLA'
-threshold = 0.05
-for i in range(0,E_size):
-    #find class
-    count=i
-    while(not class_found):
-        #find index of next date
-        j=0
+    class_found=False
+    class_val = 0
+    ticker = 'TSLA'
+    
+    for i in range(0,E_size):
+        #find class
+        count=i
+        while(not class_found):
+            #find index of next date
+            j=0
 
+            try:
+                while(E_date[count+j]<=E_date[i]):
+                    j=j+1
+            except:
+                break
+
+            #download tsla stocks for the 2 dates
+            data = yf.download(ticker, E_date[count], E_date[count+j])
+            data["Date"] = data.index
+            size = len(data)
+
+            #try to find a valid close price, if less than 2 dates found, decrement count
+            try:
+                if(data['Close'][size-1]-data['Close'][0] > data['Close'][0]*threshold):
+                    class_val = 1
+                elif(data['Close'][size-1]-data['Close'][0] < -data['Close'][0]*threshold):
+                    class_val = -1
+                else:
+                    class_val = 0
+                class_found= True
+            except:
+                count = count - 1
+
+        #assign class
+        Elon_class[i][2] = class_val
+        Elon_class[i][3] = data['Close'][0]
+        #if a new date is next, set class_found to false, it may throw error if we go out of bounds
         try:
-            while(E_date[count+j]<=E_date[i]):
+            if(E_date[i+1]>E_date[i]):
+                class_found = False
+                print("Processing date: {}".format(E_date[i+1]))
+        except:
+            x=1
+
+    #store Elon_data
+    columns = ['Date','Tweet', 'Class', 'Close_price']
+    df = pd.DataFrame(Elon_class, columns=columns)
+    df.to_csv("{}Elon_class.csv".format(Address), encoding='utf_8_sig')
+else:
+    if(Elon_class_avail):
+        print("class available")
+    else:
+        print("class unavailable")
+    for i in range(0, len(Elon_class)):
+        try:
+            j=0
+            
+            while(E_date[i+j]<=E_date[i]):
                 j=j+1
         except:
+            Elon_class['Date'][i] = 0
             break
 
-        #download tsla stocks for the 2 dates
-        data = yf.download(ticker, E_date[count], E_date[count+j])
-        data["Date"] = data.index
-        size = len(data)
+        if(Elon_class['Close_price'][i+j]-Elon_class['Close_price'][i] > Elon_class['Close_price'][i]*threshold):
+            class_val = 1
+        elif(Elon_class['Close_price'][i+j]-Elon_class['Close_price'][i] < -Elon_class['Close_price'][i]*threshold):
+            class_val = -1
+        else:
+            class_val = 0
+        Elon_class['Class'][i] = class_val
+    Elon_class.to_csv("{}Elon_class.csv".format(Address), encoding='utf_8_sig')
 
-        #try to find a valid close price, if less than 2 dates found, decrement count
-        try:
-            if(data['Close'][size-1]-data['Close'][0] > data['Close'][0]*threshold):
-                class_val = 1
-            elif(data['Close'][size-1]-data['Close'][0] < -data['Close'][0]*threshold):
-                class_val = -1
-            else:
-                class_val = 0
-            class_found= True
-        except:
-            count = count - 1
-
-    #assign class
-    Elon_class[i][2] = class_val
-
-    #if a new date is next, set class_found to false, it may throw error if we go out of bounds
-    try:
-        if(E_date[i+1]>E_date[i]):
-            class_found = False
-            print("Processing date: {}".format(E_date[i+1]))
-    except:
-        x=1
-    
-#store Elon_data
-columns = ['Date','Tweet', 'Class']
-df = pd.DataFrame(Elon_class, columns=columns)
-df.to_csv("{}Elon_class.csv".format(Address), encoding='utf_8_sig')
+Elon_class = pd.read_csv("{}Elon_class.csv".format(Address))
 
 #sum of individual classes
 class1 = 0
 class1p = 0
 class_n = 0
-for i in range(0,S_size-1):
-    if(Elon_class[i][2] == 1):
+for i in range(0,len(Elon_class)-1):
+    if(Elon_class['Class'][i] == 1):
         class1 = class1+1
-    if(Elon_class[i][2] == -1):
+    if(Elon_class['Class'][i] == -1):
         class1p = class1p+1
-    if(Elon_class[i][2] == 0):
+    if(Elon_class['Class'][i] == 0):
         class_n = class_n+1
 
 print("amt of 1: {}, amt of -1: {}, amt of 0: {}".format(class1, class1p, class_n))
-
-#store classes
-columns = ['Date', 'Class']
-df = pd.DataFrame(Class, columns=columns)
-df.to_csv("{}Classes.csv".format(Address), encoding='utf_8_sig')
-
-
-

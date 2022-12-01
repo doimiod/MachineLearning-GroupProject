@@ -23,3 +23,12 @@ Tesla = pd.DataFrame(yf.download(tickerSymbol, start=Start,end=End)['Adj Close']
 #see your data
 plt.plot(Tesla)
 plt.show()
+
+#dont delete the below code lol/ testing time arithemetic
+# z = np.array(E_date[E_size-1], dtype=np.datetime64)
+# print(z)
+
+# print(z+np.timedelta64(5,'D'))
+# d = z+np.timedelta64(5,'D')
+# if(z+np.timedelta64(5,'D') == d):
+#     print('works')

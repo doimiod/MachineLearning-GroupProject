@@ -15,8 +15,8 @@ from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 
-df = pd.read_csv('/Users/doimasanari/Desktop/MachineLearning-GroupProject/importantFiles/Elon_class.csv')
-# df = pd.read_csv('') # <- put your file location here
+df = pd.read_csv('importantFiles\Elon_class.csv')
+# df = pd.read_csv('/Users/doimasanari/Desktop/MachineLearning-GroupProject/importantFiles/Elon_class.csv')
 
 x = df.iloc[:,2]  # construct a matrix containing tweets
 y = df.iloc[:,3]  # construct a matrix containing -1, 0 or 1

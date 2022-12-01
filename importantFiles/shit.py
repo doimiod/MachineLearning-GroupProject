@@ -9,7 +9,6 @@ query = "(from:elonmusk) since:2010-06-29 -filter:replies"
 tweets = []
 limit = 100000000000
 
-
 i=0
 for tweet in sntwitter.TwitterSearchScraper(query).get_items():
 
