@@ -16,8 +16,10 @@ nltk.download('punkt')
 nltk.download('stopwords')
 from sklearn.feature_extraction.text import TfidfVectorizer
 from  sklearn.metrics  import accuracy_score
+from sklearn.model_selection import cross_val_score
+from sklearn.metrics import mean_squared_error
 
-# #CAREFUL only for warnings
+# #CAREFUL only for deprecation of datetime64
 import warnings
 warnings.filterwarnings("ignore")
 # #CAREFUL
