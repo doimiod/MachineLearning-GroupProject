@@ -14,27 +14,10 @@ from nltk.corpus import stopwords
 nltk.download('punkt')
 nltk.download('stopwords')
 from sklearn.feature_extraction.text import TfidfVectorizer
-
-nltk.download('punkt')
-nltk.download('stopwords')
+from  sklearn.metrics  import accuracy_score
 
 # df = pd.read_csv('importantFiles\Elon_class.csv')
 df = pd.read_csv('/Users/doimasanari/Desktop/MachineLearning-GroupProject/importantFiles/Elon_class.csv')
-
-x = df['Tweet']  # construct a matrix containing tweets
-y = df['Class']  # construct a matrix containing -1, 0 or 1
-
-# # a text featuring 
-# tweets = df.Tweet.str.cat(sep=' ')
-# #function to split text into word
-# tokens = word_tokenize(tweets)
-# vocabulary = set(tokens)
-# print(len(vocabulary))
-# frequency_dist = nltk.FreqDist(tokens)
-# sorted(frequency_dist,key=frequency_dist.__getitem__, reverse=True)[0:50]
-# # remove the stop words to cleanup the text
-# stop_words = set(stopwords.words('english'))            
-# tokens = [w for w in tokens if not w in stop_words]
 
 
 Tweets = df['Tweet'].str.cat(sep=' ')
@@ -44,17 +27,18 @@ vocabulary = set(tokens)
 print(len(vocabulary))
 frequency_dist = nltk.FreqDist(tokens)
 print(sorted(frequency_dist,key=frequency_dist.__getitem__, reverse=True)[0:50])
-
-
 stop_words = set(stopwords.words('english'))
 tokens = [w for w in tokens if not w in stop_words]
-
-print(tokens)
+# print(tokens)
 # text featuring ends
-print(x)
+
+x = df['Tweet']  # construct a matrix containing tweets
+y = df['Class']  # construct a matrix containing -1, 0 or 1
 
 xTrain, xTest, yTrain, yTest = train_test_split(x, y, test_size=0.8) # split the data for training and testing.
 xTest = np.array(xTest) #make an array of x test data
+
+print(xTrain)
 
 vectorizer = TfidfVectorizer()
 xTrain = vectorizer.fit_transform(xTrain)
@@ -66,9 +50,11 @@ def logisticRegression(xTrain, yTrain): # train data by logistic Regression
     print("slope = ", model.coef_)                       # get a slope here
     print("intercept = ", model.intercept_)              # get an intercept here
     print("train score = ", format(model.score(xTrain, yTrain)))
+   
     print('\n')
     predData = np.array(model.predict(xTest))   
     predData = predData.reshape(-1,1)            # make a tidy array of prediction data which contains values, -1, 0 or 1
+    print(accuracy_score(yTest,predData))
 
 
 def linear_SVC (c, xTrain, yTrain):     # train data by SVC
