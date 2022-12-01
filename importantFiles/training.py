@@ -55,15 +55,19 @@ for i in range(len(df)):
         yTest.append(y[i])    
     
 
-print(type(xTrain))
+# print(type(xTrain))
+xTrain = np.array(xTrain)
 xTest = np.array(xTest) #make an array of x test data
+yTrain = np.array(yTrain) #make an array of y train data
+yTest = np.array(yTest) #make an array of y test data
 
 print(xTrain)
+print(xTest)
 
 vectorizer = TfidfVectorizer()
 # x = v.fit_transform(df['Review'].values.astype('U'))
-xTrain = vectorizer.fit_transform(xTrain.astype('U').values)
-xTest = vectorizer.transform(xTest.astype('U'))
+xTrain = vectorizer.fit_transform(xTrain)
+xTest = vectorizer.transform(xTest)
 
 def logisticRegression(C,xTrain, yTrain, xTest, yTest): # train data by logistic Regression
     model = LogisticRegression(C=C)
