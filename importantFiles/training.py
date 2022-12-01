@@ -17,8 +17,8 @@ nltk.download('stopwords')
 from sklearn.feature_extraction.text import TfidfVectorizer
 from  sklearn.metrics  import accuracy_score
 
-# df = pd.read_csv('importantFiles\Elon_class.csv')
-df = pd.read_csv('/Users/doimasanari/Desktop/MachineLearning-GroupProject/importantFiles/Elon_class.csv')
+df = pd.read_csv('importantFiles\Elon_class.csv')
+# df = pd.read_csv('/Users/doimasanari/Desktop/MachineLearning-GroupProject/importantFiles/Elon_class.csv')
 
 x = df['Tweet']  # construct a matrix containing tweets
 y = df['Class']  # construct a matrix containing -1, 0 or 1
@@ -32,6 +32,19 @@ frequency_dist = nltk.FreqDist(tokens)
 print(sorted(frequency_dist,key=frequency_dist.__getitem__, reverse=True)[0:50])
 stop_words = set(stopwords.words('english'))
 tokens = [w for w in tokens if not w in stop_words]
+frequency_dist2 = nltk.FreqDist(tokens)
+
+# from wordcloud import WordCloud
+# wordcloud = WordCloud().generate_from_frequencies(frequency_dist)
+# plt.imshow(wordcloud)
+# plt.axis("off")
+# plt.show()
+
+# wordcloud = WordCloud().generate_from_frequencies(frequency_dist2)
+# plt.imshow(wordcloud)
+# plt.axis("off")
+# plt.show()
+
 # print(tokens)
 # text featuring ends
 print(x)
@@ -48,6 +61,7 @@ xTrain = vectorizer.fit_transform(xTrain.astype('U').values)
 xTest = vectorizer.transform(xTest.astype('U'))
 
 def logisticRegression(C,xTrain, yTrain, xTest, yTest): # train data by logistic Regression
+    print("\nLogistic Regression, with C = {}__________________________________".format(C))
     model = LogisticRegression(C=C)
     model.fit(xTrain, yTrain)                       # train data
     print("slope = ", model.coef_)                       # get a slope here
@@ -61,6 +75,7 @@ def logisticRegression(C,xTrain, yTrain, xTest, yTest): # train data by logistic
 
 
 def linear_SVC (C, xTrain, yTrain, xTest, yTest):     # train data by SVC
+    print("\nLinear SVC, with C = {}__________________________________".format(C))
     model = LinearSVC(C=C).fit(xTrain, yTrain)                         # train a data
     print("when C =", C)                                                    
     print("slope = ", model.coef_)                                          # get a slope here
@@ -74,8 +89,19 @@ def linear_SVC (C, xTrain, yTrain, xTest, yTest):     # train data by SVC
     print(classification_report(yTest, ypred))
     print(confusion_matrix(yTest,ypred))
 
+def baseline_mostFrequent(xTrain, yTrain, xTest, yTest):
+    print("\nbaseline mostfrequency classifier__________________________________")
+    from sklearn.dummy import DummyClassifier
+    dummy = DummyClassifier(strategy='most_frequent')
+    dummy.fit(xTrain, yTrain)
+    ypred = np.array(dummy.predict(xTest))   
+    ypred = ypred.reshape(-1,1)            # make a tidy array of prediction data which contains values, -1, 0 or 1
+    print(classification_report(yTest, ypred))
+    print(confusion_matrix(yTest,ypred))
+
 logisticRegression(0.001,xTrain, yTrain, xTest, yTest)
 # linear_SVC (0, xTrain, yTrain)
 linear_SVC (0.001, xTrain, yTrain,  xTest, yTest)
 linear_SVC (10, xTrain, yTrain,  xTest, yTest)
 linear_SVC (100, xTrain, yTrain,  xTest, yTest)
+baseline_mostFrequent(xTrain, yTrain,  xTest, yTest)
