@@ -46,7 +46,7 @@ vectorizer = TfidfVectorizer()
 xTrain = vectorizer.fit_transform(xTrain.astype('U').values)
 xTest = vectorizer.transform(xTest.astype('U'))
 
-def logisticRegression(xTrain, yTrain): # train data by logistic Regression
+def logisticRegression(xTrain, yTrain, xTest, yTest): # train data by logistic Regression
     model = LogisticRegression()
     model.fit(xTrain, yTrain)                       # train data
     print("slope = ", model.coef_)                       # get a slope here
