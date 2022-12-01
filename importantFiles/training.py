@@ -14,6 +14,7 @@ from nltk.corpus import stopwords
 from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.feature_extraction.text import TfidfVectorizer
 
+nltk.download('punkt')
 
 df = pd.read_csv('importantFiles\Elon_class.csv')
 # df = pd.read_csv('/Users/doimasanari/Desktop/MachineLearning-GroupProject/importantFiles/Elon_class.csv')
@@ -23,20 +24,19 @@ y = df['Class']  # construct a matrix containing -1, 0 or 1
 
 # a text featuring 
 
-reviews = pd.Series(x)
-reviews.str.cat(sep=' ')
+Tweets = df['Tweets'].str.cat(sep=' ')
 #function to split text into word
-tokens = word_tokenize(reviews)
+tokens = word_tokenize(Tweets)
 vocabulary = set(tokens)
 print(len(vocabulary))
 frequency_dist = nltk.FreqDist(tokens)
 sorted(frequency_dist,key=frequency_dist.__getitem__, reverse=True)[0:50]
-# remove the stop words to cleanup the text
-stop_words = set(stopwords.words('english'))            
-tokens = [w for w in tokens if not w in stop_words]
 
+
+stop_words = set(stopwords.words('english'))
+tokens = [w for w in tokens if not w in stop_words]
 # text featuring ends
-print(x)
+
 
 xTrain, xTest, yTrain, yTest = train_test_split(x, y, test_size=0.8) # split the data for training and testing.
 xTest = np.array(xTest) #make an array of x test data
