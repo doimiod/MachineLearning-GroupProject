@@ -17,13 +17,11 @@ nltk.download('stopwords')
 from sklearn.feature_extraction.text import TfidfVectorizer
 from  sklearn.metrics  import accuracy_score
 
-df = pd.read_csv('importantFiles\Elon_class.csv')
-# df = pd.read_csv('/Users/doimasanari/Desktop/MachineLearning-GroupProject/importantFiles/Elon_class.csv')
+# df = pd.read_csv('importantFiles\Elon_class.csv')
+df = pd.read_csv('/Users/doimasanari/Desktop/MachineLearning-GroupProject/importantFiles/Elon_class.csv')
 
 x = df['Tweet']  # construct a matrix containing tweets
 y = df['Class']  # construct a matrix containing -1, 0 or 1
-
-# # a text featuring 
 
 Tweets = df['Tweet'].str.cat(sep=' ')
 #function to split text into word
