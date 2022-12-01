@@ -178,6 +178,15 @@ else:
 
 Elon_class = pd.read_csv("{}Elon_class.csv".format(Address))
 
+#remove URL
+import re
+
+for i in range(0,len(Elon_class)):
+
+    Elon_class['Tweet'][i] = re.sub(r'https?://\S+', '', Elon_class['Tweet'][i])
+
+Elon_class.to_csv("{}Elon_class.csv".format(Address), encoding='utf_8_sig',)
+
 #sum of individual classes
 class1 = 0
 class1p = 0
