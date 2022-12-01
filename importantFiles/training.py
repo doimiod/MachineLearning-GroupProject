@@ -95,7 +95,7 @@ print(test)
 
 def logisticRegression(C,xTrain, yTrain, xTest, yTest): # train data by logistic Regression
     print("\nLogistic Regression, with C = {}__________________________________".format(C))
-    model = LogisticRegression(C=C)
+    model = LogisticRegression(C=C,penalty = "l2")
     model.fit(xTrain, yTrain)                       # train data
     print("slope = ", model.coef_)                       # get a slope here
     print("intercept = ", model.intercept_)              # get an intercept here
@@ -109,7 +109,7 @@ def logisticRegression(C,xTrain, yTrain, xTest, yTest): # train data by logistic
 
 def linear_SVC (C, xTrain, yTrain, xTest, yTest):     # train data by SVC
     print("\nLinear SVC, with C = {}__________________________________".format(C))
-    model = LinearSVC(C=C).fit(xTrain, yTrain)                         # train a data
+    model = LinearSVC(C=C, penalty= "l2").fit(xTrain, yTrain)                         # train a data
     print("when C =", C)                                                    
     print("slope = ", model.coef_)                                          # get a slope here
     print("intercept = ", model.intercept_)                                 # get an intercept here
