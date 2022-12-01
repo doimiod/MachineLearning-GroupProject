@@ -12,8 +12,8 @@ from sklearn.metrics import confusion_matrix, classification_report
 import nltk
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
-nltk.download('punkt')
-nltk.download('stopwords')
+# nltk.download('punkt')
+# nltk.download('stopwords')
 from sklearn.feature_extraction.text import TfidfVectorizer
 from  sklearn.metrics  import accuracy_score
 from sklearn.model_selection import cross_val_score
@@ -99,13 +99,69 @@ print(test)
 
 def logisticRegression(C, xTrain, yTrain, xTest, yTest): # train data by logistic Regression
     print("\nLogistic Regression, with C = {}__________________________________".format(C))
-    model = LogisticRegression(C=C,penalty = "l2")
-    model.fit(xTrain, yTrain)                       # train data
-    print("slope = ", model.coef_)                       # get a slope here
-    print("intercept = ", model.intercept_)              # get an intercept here
-    print("train score = ", format(model.score(xTrain, yTrain)))
-    print('\n')
-    ypred = np.array(model.predict(xTest))   
+    YTrain_buffer = []
+    YTest_buffer = []
+
+    #for class = 1
+    for i in range(0, len(yTrain)):
+        if(yTrain[i]==0):
+            YTrain_buffer.append(-1)
+        else:
+            YTrain_buffer.append(yTrain[i])
+    for i in range(0,len(yTest)):
+        if(yTest[i]==0):
+            YTest_buffer.append(-1)
+        else:
+            YTest_buffer.append(yTest[i])
+    model1 = LogisticRegression(C=C,penalty = "l2")
+    model1.fit(xTrain, YTrain_buffer)                       # train data
+
+    #for class = 0
+    for i in range(0, len(yTrain)):
+        if(yTrain[i] == 1):
+            YTrain_buffer[i] = -1
+        elif(yTrain[i]==0):
+            YTrain_buffer[i] = 1
+    for i in range(0,len(yTest)):
+        if(yTest[i] == 1):
+            YTest_buffer[i] = -1
+        elif(yTest[i]==0):
+            YTest_buffer[i] = 1
+    model2 = LogisticRegression(C=C,penalty = "l2")
+    model2.fit(xTrain, YTrain_buffer)                       # train data
+
+    #for class = -1
+    for i in range(0, len(yTrain)):
+        if(yTrain[i] == 1):
+            YTrain_buffer[i] = -1
+        elif(yTrain[i] == 0):
+            YTrain_buffer[i] = -1
+        elif(yTrain[i]==-1):
+            YTrain_buffer[i] = 1
+    for i in range(0,len(yTest)):
+        if(yTest[i] == 1):
+            YTest_buffer[i] = -1
+        elif(yTest[i] == 0):
+            YTest_buffer[i] = -1
+        elif(yTest[i]==-1):
+            YTest_buffer[i] = 1
+    model3 = LogisticRegression(C=C,penalty = "l2")
+    model3.fit(xTrain, YTrain_buffer)                       # train data
+
+    ypred1 = np.array(model1.predict_proba(xTest)) #predicts 1->1 and 0,-1 -> -1
+    ypred2 = np.array(model2.predict_proba(xTest)) #predicts 0->1 and 1,-1 -> -1
+    ypred3 = np.array(model3.predict_proba(xTest)) #predicts -1->1 and 0,1 -> -1
+    ypred = []
+    for i in range(0, len(yTest)):
+        if(ypred1[i][1]>ypred2[i][1] and ypred1[i][1]>ypred3[i][1]):
+            ypred.append(1)
+        elif(ypred2[i][1]>ypred1[i][1] and ypred2[i][1]>ypred3[i][1]):
+            ypred.append(0)
+        elif(ypred3[i][1]>ypred1[i][1] and ypred3[i][1]>ypred2[i][1]):
+            ypred.append(-1)
+        else:
+            ypred.append(0)
+    ypred = np.array(ypred)
     ypred = ypred.reshape(-1,1)            # make a tidy array of prediction data which contains values, -1, 0 or 1
     print(classification_report(yTest, ypred))
     print(confusion_matrix(yTest,ypred))
@@ -132,15 +188,69 @@ def logisticRegression(C, xTrain, yTrain, xTest, yTest): # train data by logisti
 
 def linear_SVC (C, xTrain, yTrain, xTest, yTest):     # train data by SVC
     print("\nLinear SVC, with C = {}__________________________________".format(C))
-    model = LinearSVC(C=C, penalty= "l2").fit(xTrain, yTrain)                         # train a data
-    print("when C =", C)                                                    
-    print("slope = ", model.coef_)                                          # get a slope here
-    print("intercept = ", model.intercept_)                                 # get an intercept here
-    print("mean accuracy = ", format(model.score(xTrain, yTrain)))
-    print('\n')
-    predData = np.array(model.predict(xTest))   
-    predData = predData.reshape(-1,1)            # make a tidy array of prediction data which contains values, -1, 0 or 1
-    ypred = np.array(model.predict(xTest))   
+    YTrain_buffer = []
+    YTest_buffer = []
+
+    #for class = 1
+    for i in range(0, len(yTrain)):
+        if(yTrain[i]==0):
+            YTrain_buffer.append(-1)
+        else:
+            YTrain_buffer.append(yTrain[i])
+    for i in range(0,len(yTest)):
+        if(yTest[i]==0):
+            YTest_buffer.append(-1)
+        else:
+            YTest_buffer.append(yTest[i])
+    model1 = LinearSVC(C=C, penalty= "l2")
+    model1.fit(xTrain, YTrain_buffer)                       # train data
+
+    #for class = 0
+    for i in range(0, len(yTrain)):
+        if(yTrain[i] == 1):
+            YTrain_buffer[i] = -1
+        elif(yTrain[i]==0):
+            YTrain_buffer[i] = 1
+    for i in range(0,len(yTest)):
+        if(yTest[i] == 1):
+            YTest_buffer[i] = -1
+        elif(yTest[i]==0):
+            YTest_buffer[i] = 1
+    model2 = LinearSVC(C=C,penalty = "l2")
+    model2.fit(xTrain, YTrain_buffer)                       # train data
+
+    #for class = -1
+    for i in range(0, len(yTrain)):
+        if(yTrain[i] == 1):
+            YTrain_buffer[i] = -1
+        elif(yTrain[i] == 0):
+            YTrain_buffer[i] = -1
+        elif(yTrain[i]==-1):
+            YTrain_buffer[i] = 1
+    for i in range(0,len(yTest)):
+        if(yTest[i] == 1):
+            YTest_buffer[i] = -1
+        elif(yTest[i] == 0):
+            YTest_buffer[i] = -1
+        elif(yTest[i]==-1):
+            YTest_buffer[i] = 1
+    model3 = LinearSVC(C=C,penalty = "l2")
+    model3.fit(xTrain, YTrain_buffer)                       # train data
+
+    ypred1 = np.array(model1._predict_proba_lr(xTest)) #predicts 1->1 and 0,-1 -> -1
+    ypred2 = np.array(model2._predict_proba_lr(xTest)) #predicts 0->1 and 1,-1 -> -1
+    ypred3 = np.array(model3._predict_proba_lr(xTest)) #predicts -1->1 and 0,1 -> -1
+    ypred = []
+    for i in range(0, len(yTest)):
+        if(ypred1[i][1]>ypred2[i][1] and ypred1[i][1]>ypred3[i][1]):
+            ypred.append(1)
+        elif(ypred2[i][1]>ypred1[i][1] and ypred2[i][1]>ypred3[i][1]):
+            ypred.append(0)
+        elif(ypred3[i][1]>ypred1[i][1] and ypred3[i][1]>ypred2[i][1]):
+            ypred.append(-1)
+        else:
+            ypred.append(0)
+    ypred = np.array(ypred)
     ypred = ypred.reshape(-1,1)            # make a tidy array of prediction data which contains values, -1, 0 or 1
     print(classification_report(yTest, ypred))
     print(confusion_matrix(yTest,ypred))
@@ -213,7 +323,9 @@ def plot(c, mean_error, std_error):
 
 logisticRegression(0.1, xTrain, yTrain, xTest, yTest)
 # linear_SVC (0, xTrain, yTrain)
-linear_SVC (0.01, xTrain, yTrain,  xTest, yTest)
-linear_SVC (10, xTrain, yTrain,  xTest, yTest)
-linear_SVC (100, xTrain, yTrain,  xTest, yTest)
+linear_SVC (0.001, xTrain, yTrain,  xTest, yTest)
+linear_SVC (0.1, xTrain, yTrain,  xTest, yTest)
+linear_SVC (1, xTrain, yTrain,  xTest, yTest)
+linear_SVC (70, xTrain, yTrain,  xTest, yTest)
+linear_SVC (90, xTrain, yTrain,  xTest, yTest)
 baseline_mostFrequent(xTrain, yTrain,  xTest, yTest)

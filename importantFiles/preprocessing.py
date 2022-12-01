@@ -16,7 +16,7 @@ warnings.filterwarnings("ignore")
 # #CAREFUL
 
 #Initialization
-threshold = 0.02
+threshold = 0.05
 Elon_class_avail = True
 Elon_data_avail = True
 update_tweet = False
