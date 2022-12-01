@@ -16,7 +16,7 @@ warnings.filterwarnings("ignore")
 # #CAREFUL
 
 #Initialization
-threshold = 0.01
+threshold = 0.05
 Elon_class_avail = True
 Elon_data_avail = True
 update_tweet = False
@@ -89,15 +89,18 @@ if (val == 'y'):
 #class undecided: 0
 #classes for stocks between dates. need to assign the class to the tweets at the relevant dates.
 
+#
 if(not Elon_class_avail or update_class):
+    
+    #convert dict to array to datetime64 to only yyyy-mm-hh
     E_date = Elon_data['Date']
     E_date = np.array(E_date, dtype=np.datetime64)
     E_date = E_date.astype(datetime.datetime)
     E_date = [x.strftime('%Y-%m-%d') for x in E_date]
     E_size = len(E_date)
 
-    initial_date = E_date[E_size-1]
-
+    # initial_date = E_date[E_size-1]
+    
     for i in range(0, E_size):
         Elon_class.append([E_date[i], Elon_data['Tweet'][i],"",""])
 
@@ -182,8 +185,10 @@ Elon_class = pd.read_csv("{}Elon_class.csv".format(Address))
 import re
 
 for i in range(0,len(Elon_class)):
-
-    Elon_class['Tweet'][i] = re.sub(r'https?://\S+', '', Elon_class['Tweet'][i])
+    try:
+        Elon_class['Tweet'][i] = re.sub(r'http\S+', '', Elon_class['Tweet'][i])
+    except:
+        x=1
 
 Elon_class.to_csv("{}Elon_class.csv".format(Address), encoding='utf_8_sig',)
 
