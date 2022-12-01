@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 from sklearn.svm import LinearSVC
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import confusion_matrix, classification_report
 import nltk
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
@@ -64,31 +65,35 @@ vectorizer = TfidfVectorizer()
 xTrain = vectorizer.fit_transform(xTrain.astype('U').values)
 xTest = vectorizer.transform(xTest.astype('U'))
 
-def logisticRegression(xTrain, yTrain, xTest, yTest): # train data by logistic Regression
-    model = LogisticRegression()
+def logisticRegression(C,xTrain, yTrain, xTest, yTest): # train data by logistic Regression
+    model = LogisticRegression(C=C)
     model.fit(xTrain, yTrain)                       # train data
     print("slope = ", model.coef_)                       # get a slope here
     print("intercept = ", model.intercept_)              # get an intercept here
     print("train score = ", format(model.score(xTrain, yTrain)))
     print('\n')
-    predData = np.array(model.predict(xTest))   
-    predData = predData.reshape(-1,1)            # make a tidy array of prediction data which contains values, -1, 0 or 1
-    print(accuracy_score(yTest,predData))
+    ypred = np.array(model.predict(xTest))   
+    ypred = ypred.reshape(-1,1)            # make a tidy array of prediction data which contains values, -1, 0 or 1
+    print(classification_report(yTest, ypred))
+    print(confusion_matrix(yTest,ypred))
 
 
-def linear_SVC (c, xTrain, yTrain):     # train data by SVC
-    model = LinearSVC(C=c).fit(xTrain, yTrain)                         # train a data
-    print("when C =", c)                                                    
+def linear_SVC (C, xTrain, yTrain, xTest, yTest):     # train data by SVC
+    model = LinearSVC(C=C).fit(xTrain, yTrain)                         # train a data
+    print("when C =", C)                                                    
     print("slope = ", model.coef_)                                          # get a slope here
     print("intercept = ", model.intercept_)                                 # get an intercept here
     print("mean accuracy = ", format(model.score(xTrain, yTrain)))
     print('\n')
     predData = np.array(model.predict(xTest))   
     predData = predData.reshape(-1,1)            # make a tidy array of prediction data which contains values, -1, 0 or 1
+    ypred = np.array(model.predict(xTest))   
+    ypred = ypred.reshape(-1,1)            # make a tidy array of prediction data which contains values, -1, 0 or 1
+    print(classification_report(yTest, ypred))
+    print(confusion_matrix(yTest,ypred))
 
-
-logisticRegression(xTrain, yTrain)
+logisticRegression(0.001,xTrain, yTrain, xTest, yTest)
 # linear_SVC (0, xTrain, yTrain)
-linear_SVC (0.001, xTrain, yTrain)
-linear_SVC (10, xTrain, yTrain)
-linear_SVC (100, xTrain, yTrain)
+linear_SVC (0.001, xTrain, yTrain,  xTest, yTest)
+linear_SVC (10, xTrain, yTrain,  xTest, yTest)
+linear_SVC (100, xTrain, yTrain,  xTest, yTest)
