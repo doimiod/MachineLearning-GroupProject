@@ -16,9 +16,11 @@ nltk.download('punkt')
 nltk.download('stopwords')
 from sklearn.feature_extraction.text import TfidfVectorizer
 from  sklearn.metrics  import accuracy_score
+from sklearn.model_selection import cross_val_score
+from sklearn.metrics import mean_squared_error
 
-df = pd.read_csv('importantFiles\Elon_class.csv')
-# df = pd.read_csv('/Users/doimasanari/Desktop/MachineLearning-GroupProject/importantFiles/Elon_class.csv')
+# df = pd.read_csv('importantFiles\Elon_class.csv')
+df = pd.read_csv('/Users/doimasanari/Desktop/MachineLearning-GroupProject/importantFiles/Elon_class.csv')
 
 x = df['Tweet']  # construct a matrix containing tweets
 y = df['Class']  # construct a matrix containing -1, 0 or 1
