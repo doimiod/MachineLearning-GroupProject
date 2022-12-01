@@ -14,15 +14,13 @@ from nltk.corpus import stopwords
 nltk.download('punkt')
 nltk.download('stopwords')
 from sklearn.feature_extraction.text import TfidfVectorizer
-
-nltk.download('punkt')
-nltk.download('stopwords')
+from  sklearn.metrics  import accuracy_score
 
 df = pd.read_csv('importantFiles\Elon_class.csv')
 # df = pd.read_csv('/Users/doimasanari/Desktop/MachineLearning-GroupProject/importantFiles/Elon_class.csv')
 
 x = df['Tweet']  # construct a matrix containing tweets
-y = df['Class'] # construct a matrix containing -1, 0 or 1
+y = df['Class']  # construct a matrix containing -1, 0 or 1
 
 # # a text featuring 
 
@@ -33,17 +31,17 @@ vocabulary = set(tokens)
 print(len(vocabulary))
 frequency_dist = nltk.FreqDist(tokens)
 print(sorted(frequency_dist,key=frequency_dist.__getitem__, reverse=True)[0:50])
-
-
 stop_words = set(stopwords.words('english'))
 tokens = [w for w in tokens if not w in stop_words]
-
-print(tokens)
+# print(tokens)
 # text featuring ends
+print(x)
 
 xTrain, xTest, yTrain, yTest = train_test_split(x, y, test_size=0.2) # split the data for training and testing.
 print(type(xTrain))
 xTest = np.array(xTest) #make an array of x test data
+
+print(xTrain)
 
 vectorizer = TfidfVectorizer()
 # x = v.fit_transform(df['Review'].values.astype('U'))
@@ -55,10 +53,11 @@ def logisticRegression(xTrain, yTrain, xTest, yTest): # train data by logistic R
     model.fit(xTrain, yTrain)                       # train data
     print("slope = ", model.coef_)                       # get a slope here
     print("intercept = ", model.intercept_)              # get an intercept here
-    print("mean accuracy = ", format(model.score(xTrain, yTrain)))
+    print("train score = ", format(model.score(xTrain, yTrain)))
     print('\n')
     predData = np.array(model.predict(xTest))   
     predData = predData.reshape(-1,1)            # make a tidy array of prediction data which contains values, -1, 0 or 1
+    print(accuracy_score(yTest,predData))
 
 
 def linear_SVC (c, xTrain, yTrain):     # train data by SVC
