@@ -13,7 +13,6 @@ from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 nltk.download('punkt')
 nltk.download('stopwords')
-from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 nltk.download('punkt')
@@ -24,17 +23,17 @@ df = pd.read_csv('/Users/doimasanari/Desktop/MachineLearning-GroupProject/import
 x = df['Tweet']  # construct a matrix containing tweets
 y = df['Class']  # construct a matrix containing -1, 0 or 1
 
-# a text featuring 
-tweets = df.Tweet.str.cat(sep=' ')
-#function to split text into word
-tokens = word_tokenize(tweets)
-vocabulary = set(tokens)
-print(len(vocabulary))
-frequency_dist = nltk.FreqDist(tokens)
-sorted(frequency_dist,key=frequency_dist.__getitem__, reverse=True)[0:50]
-# remove the stop words to cleanup the text
-stop_words = set(stopwords.words('english'))            
-tokens = [w for w in tokens if not w in stop_words]
+# # a text featuring 
+# tweets = df.Tweet.str.cat(sep=' ')
+# #function to split text into word
+# tokens = word_tokenize(tweets)
+# vocabulary = set(tokens)
+# print(len(vocabulary))
+# frequency_dist = nltk.FreqDist(tokens)
+# sorted(frequency_dist,key=frequency_dist.__getitem__, reverse=True)[0:50]
+# # remove the stop words to cleanup the text
+# stop_words = set(stopwords.words('english'))            
+# tokens = [w for w in tokens if not w in stop_words]
 
 
 Tweets = df['Tweets'].str.cat(sep=' ')
