@@ -22,6 +22,7 @@ df = pd.read_csv('importantFiles\Elon_class.csv')
 
 x = df['Tweet']  # construct a matrix containing tweets
 y = df['Class']  # construct a matrix containing -1, 0 or 1
+date = df['Date'] # construct a matrix containing the date
 
 Tweets = df['Tweet'].str.cat(sep=' ')
 #function to split text into word
@@ -49,16 +50,37 @@ frequency_dist2 = nltk.FreqDist(tokens)
 # text featuring ends
 print(x)
 
-xTrain, xTest, yTrain, yTest = train_test_split(x, y, test_size=0.2) # split the data for training and testing.
-print(type(xTrain))
-xTest = np.array(xTest) #make an array of x test data
+# xTrain, xTest, yTrain, yTest = train_test_split(x, y, test_size=0.2) # split the data for training and testing.
 
-print(xTrain)
+xTrain = []
+xTest = []
+yTrain = []
+yTest = []
+split = len(df)*0.8
+
+for i in range(len(df)):
+
+    if(i <= split):
+        xTrain.append(x[i])
+        yTrain.append(y[i])
+    else:
+        xTest.append(x[i])
+        yTest.append(y[i])    
+    
+
+# print(type(xTrain))
+xTrain = np.array(xTrain)
+xTest = np.array(xTest) #make an array of x test data
+yTrain = np.array(yTrain) #make an array of y train data
+yTest = np.array(yTest) #make an array of y test data
+
+# print(xTrain)
+# print(xTest)
 
 vectorizer = TfidfVectorizer()
 # x = v.fit_transform(df['Review'].values.astype('U'))
-xTrain = vectorizer.fit_transform(xTrain.astype('U').values)
-xTest = vectorizer.transform(xTest.astype('U'))
+xTrain = vectorizer.fit_transform(xTrain)
+xTest = vectorizer.transform(xTest)
 
 def logisticRegression(C,xTrain, yTrain, xTest, yTest): # train data by logistic Regression
     print("\nLogistic Regression, with C = {}__________________________________".format(C))
