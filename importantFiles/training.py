@@ -61,8 +61,8 @@ xTest = np.array(xTest) #make an array of x test data
 yTrain = np.array(yTrain) #make an array of y train data
 yTest = np.array(yTest) #make an array of y test data
 
-print(xTrain)
-print(xTest)
+# print(xTrain)
+# print(xTest)
 
 vectorizer = TfidfVectorizer()
 # x = v.fit_transform(df['Review'].values.astype('U'))
