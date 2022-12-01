@@ -18,6 +18,8 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from  sklearn.metrics  import accuracy_score
 from sklearn.model_selection import cross_val_score
 from sklearn.metrics import mean_squared_error
+from sklearn.model_selection import KFold
+from sklearn.metrics import f1_score
 
 # #CAREFUL only for deprecation of datetime64
 import warnings
@@ -105,6 +107,18 @@ def logisticRegression(C,xTrain, yTrain, xTest, yTest): # train data by logistic
     ypred = ypred.reshape(-1,1)            # make a tidy array of prediction data which contains values, -1, 0 or 1
     print(classification_report(yTest, ypred))
     print(confusion_matrix(yTest,ypred))
+    temp=[]
+    mean_error=[]
+    std_error = []
+    kf = KFold(n_splits=5)
+    for train, test in kf.split(xTrain):
+        model.fit(xTrain[train,:], yTrain[train])
+        ypred = model.predict(xTrain[test,:])
+        temp.append(f1_score(yTrain[test],ypred))
+        Xnew = xTrain[test,:]
+    mean_error.append(np.array(temp).mean())
+    std_error.append(np.array(temp).std())
+    plot(mean_error, std_error)
 
 
 def linear_SVC (C, xTrain, yTrain, xTest, yTest):     # train data by SVC
@@ -132,6 +146,15 @@ def baseline_mostFrequent(xTrain, yTrain, xTest, yTest):
     print(classification_report(yTest, ypred))
     print(confusion_matrix(yTest,ypred))
 
+
+def plot(mean_error, std_error):
+    plt.errorbar(mean_error, yerr=std_error, ecolor ="red", marker = "o", ms=3)
+    # plt.xlabel("Degree of polynomial")
+    plt.ylabel("f1 score")
+    plt.title("Logistic regression")
+    plt.show()
+
+
 # mean_error=[]
 # std_error = []
 # cm=[]
@@ -142,15 +165,17 @@ def baseline_mostFrequent(xTrain, yTrain, xTest, yTest):
 #     model = LogisticRegression(penalty = "l2",C = 1, solver="lbfgs")
 
 #     #5 fold CV
-#     temp=[]
-#     kf = KFold(n_splits=5)
-#     for train, test in kf.split(Xtrain):
-#         model.fit(Xtrain[train,:], ytrain[train])
-#         ypred = model.predict(Xtrain[test,:])
-#         temp.append(f1_score(ytrain[test],ypred))
-#         Xnew = Xtrain[test,:]
-#     mean_error.append(np.array(temp).mean())
-#     std_error.append(np.array(temp).std())
+    # temp=[]
+    # kf = KFold(n_splits=5)
+    # for train, test in kf.split(Xtrain):
+    #     model.fit(Xtrain[train,:], ytrain[train])
+    #     ypred = model.predict(Xtrain[test,:])
+    #     temp.append(f1_score(ytrain[test],ypred))
+    #     Xnew = Xtrain[test,:]
+    # mean_error.append(np.array(temp).mean())
+    # std_error.append(np.array(temp).std())
+
+
 # #CHOSEN ORDER OF POLYNOMIAL
 # deg = 2
 # #plot data
@@ -159,6 +184,7 @@ def baseline_mostFrequent(xTrain, yTrain, xTest, yTest):
 # plt.ylabel("f1 score")
 # plt.title("Logistic regression")
 # plt.show()
+
 
 logisticRegression(0.1,xTrain, yTrain, xTest, yTest)
 # linear_SVC (0, xTrain, yTrain)
