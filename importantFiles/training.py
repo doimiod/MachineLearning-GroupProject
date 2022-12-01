@@ -25,17 +25,6 @@ x = df['Tweet']  # construct a matrix containing tweets
 y = df['Class'] # construct a matrix containing -1, 0 or 1
 
 # # a text featuring 
-# tweets = df.Tweet.str.cat(sep=' ')
-# #function to split text into word
-# tokens = word_tokenize(tweets)
-# vocabulary = set(tokens)
-# print(len(vocabulary))
-# frequency_dist = nltk.FreqDist(tokens)
-# sorted(frequency_dist,key=frequency_dist.__getitem__, reverse=True)[0:50]
-# # remove the stop words to cleanup the text
-# stop_words = set(stopwords.words('english'))            
-# tokens = [w for w in tokens if not w in stop_words]
-
 
 Tweets = df['Tweet'].str.cat(sep=' ')
 #function to split text into word
@@ -61,7 +50,7 @@ vectorizer = TfidfVectorizer()
 xTrain = vectorizer.fit_transform(xTrain.astype('U').values)
 xTest = vectorizer.transform(xTest.astype('U'))
 
-def logisticRegression(xTrain, yTrain): # train data by logistic Regression
+def logisticRegression(xTrain, yTrain, xTest, yTest): # train data by logistic Regression
     model = LogisticRegression()
     model.fit(xTrain, yTrain)                       # train data
     print("slope = ", model.coef_)                       # get a slope here
