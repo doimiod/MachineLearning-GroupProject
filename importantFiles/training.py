@@ -16,8 +16,23 @@ nltk.download('stopwords')
 from sklearn.feature_extraction.text import TfidfVectorizer
 from  sklearn.metrics  import accuracy_score
 
-# df = pd.read_csv('importantFiles\Elon_class.csv')
-df = pd.read_csv('/Users/doimasanari/Desktop/MachineLearning-GroupProject/importantFiles/Elon_class.csv')
+df = pd.read_csv('importantFiles\Elon_class.csv')
+# df = pd.read_csv('/Users/doimasanari/Desktop/MachineLearning-GroupProject/importantFiles/Elon_class.csv')
+
+x = df['Tweet']  # construct a matrix containing tweets
+y = df['Class']  # construct a matrix containing -1, 0 or 1
+
+# # a text featuring 
+# tweets = df.Tweet.str.cat(sep=' ')
+# #function to split text into word
+# tokens = word_tokenize(tweets)
+# vocabulary = set(tokens)
+# print(len(vocabulary))
+# frequency_dist = nltk.FreqDist(tokens)
+# sorted(frequency_dist,key=frequency_dist.__getitem__, reverse=True)[0:50]
+# # remove the stop words to cleanup the text
+# stop_words = set(stopwords.words('english'))            
+# tokens = [w for w in tokens if not w in stop_words]
 
 
 Tweets = df['Tweet'].str.cat(sep=' ')
@@ -31,18 +46,18 @@ stop_words = set(stopwords.words('english'))
 tokens = [w for w in tokens if not w in stop_words]
 # print(tokens)
 # text featuring ends
+print(x)
 
-x = df['Tweet']  # construct a matrix containing tweets
-y = df['Class']  # construct a matrix containing -1, 0 or 1
-
-xTrain, xTest, yTrain, yTest = train_test_split(x, y, test_size=0.8) # split the data for training and testing.
+xTrain, xTest, yTrain, yTest = train_test_split(x, y, test_size=0.2) # split the data for training and testing.
+print(type(xTrain))
 xTest = np.array(xTest) #make an array of x test data
 
 print(xTrain)
 
 vectorizer = TfidfVectorizer()
-xTrain = vectorizer.fit_transform(xTrain)
-xTest = vectorizer.transform(xTest)
+# x = v.fit_transform(df['Review'].values.astype('U'))
+xTrain = vectorizer.fit_transform(xTrain.astype('U').values)
+xTest = vectorizer.transform(xTest.astype('U'))
 
 def logisticRegression(xTrain, yTrain): # train data by logistic Regression
     model = LogisticRegression()
@@ -50,7 +65,6 @@ def logisticRegression(xTrain, yTrain): # train data by logistic Regression
     print("slope = ", model.coef_)                       # get a slope here
     print("intercept = ", model.intercept_)              # get an intercept here
     print("train score = ", format(model.score(xTrain, yTrain)))
-   
     print('\n')
     predData = np.array(model.predict(xTest))   
     predData = predData.reshape(-1,1)            # make a tidy array of prediction data which contains values, -1, 0 or 1
@@ -62,7 +76,7 @@ def linear_SVC (c, xTrain, yTrain):     # train data by SVC
     print("when C =", c)                                                    
     print("slope = ", model.coef_)                                          # get a slope here
     print("intercept = ", model.intercept_)                                 # get an intercept here
-    print("train score = ", format(model.score(xTrain, yTrain)))
+    print("mean accuracy = ", format(model.score(xTrain, yTrain)))
     print('\n')
     predData = np.array(model.predict(xTest))   
     predData = predData.reshape(-1,1)            # make a tidy array of prediction data which contains values, -1, 0 or 1
