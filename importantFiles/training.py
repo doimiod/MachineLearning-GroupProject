@@ -19,8 +19,13 @@ from  sklearn.metrics  import accuracy_score
 from sklearn.model_selection import cross_val_score
 from sklearn.metrics import mean_squared_error
 
-# df = pd.read_csv('importantFiles\Elon_class.csv')
-df = pd.read_csv('/Users/doimasanari/Desktop/MachineLearning-GroupProject/importantFiles/Elon_class.csv')
+ #CAREFUL only for deprecation of datetime64
+import warnings
+warnings.filterwarnings("ignore")
+# #CAREFUL
+
+df = pd.read_csv('importantFiles\Elon_class.csv')
+# df = pd.read_csv('/Users/doimasanari/Desktop/MachineLearning-GroupProject/importantFiles/Elon_class.csv')
 
 x = df['Tweet']  # construct a matrix containing tweets
 y = df['Class']  # construct a matrix containing -1, 0 or 1
@@ -58,11 +63,11 @@ xTrain = []
 xTest = []
 yTrain = []
 yTest = []
-split = len(df)*0.8
+split = 0.95
 
-for i in range(len(df)):
+for i in range(len(x)):
 
-    if(i <= split):
+    if(i <= split*len(x)):
         xTrain.append(x[i])
         yTrain.append(y[i])
     else:
@@ -83,6 +88,10 @@ vectorizer = TfidfVectorizer()
 # x = v.fit_transform(df['Review'].values.astype('U'))
 xTrain = vectorizer.fit_transform(xTrain)
 xTest = vectorizer.transform(xTest)
+test  = vectorizer.get_feature_names_out()
+dfs = pd.DataFrame(test, columns=['Features'])
+dfs.to_csv("importantFiles/test.csv", encoding='utf_8_sig')
+print(test)
 
 def logisticRegression(C,xTrain, yTrain, xTest, yTest): # train data by logistic Regression
     print("\nLogistic Regression, with C = {}__________________________________".format(C))
@@ -123,9 +132,29 @@ def baseline_mostFrequent(xTrain, yTrain, xTest, yTest):
     print(classification_report(yTest, ypred))
     print(confusion_matrix(yTest,ypred))
 
-logisticRegression(0.001,xTrain, yTrain, xTest, yTest)
+# mean_error=[]
+# std_error = []
+# cm=[]
+# polyDegree = [1,2,4,5,6,8,10,40]
+# for poly in polyDegree:
+#     Xtrain = PolynomialFeatures(degree = poly).fit_transform(X)
+#     ytrain = Y
+#     model = LogisticRegression(penalty = "l2",C = 1, solver="lbfgs")
+
+#     #5 fold CV
+#     temp=[]
+#     kf = KFold(n_splits=5)
+#     for train, test in kf.split(Xtrain):
+#         model.fit(Xtrain[train,:], ytrain[train])
+#         ypred = model.predict(Xtrain[test,:])
+#         temp.append(f1_score(ytrain[test],ypred))
+#         Xnew = Xtrain[test,:]
+#     mean_error.append(np.array(temp).mean())
+#     std_error.append(np.array(temp).std())
+
+logisticRegression(0.1,xTrain, yTrain, xTest, yTest)
 # linear_SVC (0, xTrain, yTrain)
-linear_SVC (0.001, xTrain, yTrain,  xTest, yTest)
+linear_SVC (0.01, xTrain, yTrain,  xTest, yTest)
 linear_SVC (10, xTrain, yTrain,  xTest, yTest)
 linear_SVC (100, xTrain, yTrain,  xTest, yTest)
 baseline_mostFrequent(xTrain, yTrain,  xTest, yTest)
