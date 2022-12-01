@@ -16,7 +16,7 @@ warnings.filterwarnings("ignore")
 # #CAREFUL
 
 #Initialization
-threshold = 0.03
+threshold = 0.02
 Elon_class_avail = True
 Elon_data_avail = True
 update_tweet = False
@@ -25,13 +25,16 @@ Elon_class = []
 Elon_data = []
 try:
     Elon_data = pd.read_csv("{}ElonsTweets.csv".format(Address))
+except:
+    Elon_data_avail = False
+try:
     E_date = Elon_data['Date']
     E_date = np.array(E_date, dtype=np.datetime64)
     E_date = E_date.astype(datetime.datetime)
     E_date = [x.strftime('%Y-%m-%d') for x in E_date]
     E_size = len(E_date)
-except:
-    Elon_data_avail = False
+except: 
+    x=1
 try:
     Elon_class = pd.read_csv("{}Elon_class.csv".format(Address))
 except:

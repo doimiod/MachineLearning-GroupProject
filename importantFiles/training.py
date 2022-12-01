@@ -17,6 +17,11 @@ nltk.download('stopwords')
 from sklearn.feature_extraction.text import TfidfVectorizer
 from  sklearn.metrics  import accuracy_score
 
+# #CAREFUL only for deprecation of datetime64
+import warnings
+warnings.filterwarnings("ignore")
+# #CAREFUL
+
 df = pd.read_csv('importantFiles\Elon_class.csv')
 # df = pd.read_csv('/Users/doimasanari/Desktop/MachineLearning-GroupProject/importantFiles/Elon_class.csv')
 
@@ -56,11 +61,11 @@ xTrain = []
 xTest = []
 yTrain = []
 yTest = []
-split = len(df)*0.8
+split = 0.95
 
-for i in range(len(df)):
+for i in range(len(x)):
 
-    if(i <= split):
+    if(i <= split*len(x)):
         xTrain.append(x[i])
         yTrain.append(y[i])
     else:
@@ -121,9 +126,9 @@ def baseline_mostFrequent(xTrain, yTrain, xTest, yTest):
     print(classification_report(yTest, ypred))
     print(confusion_matrix(yTest,ypred))
 
-logisticRegression(0.001,xTrain, yTrain, xTest, yTest)
+logisticRegression(0.1,xTrain, yTrain, xTest, yTest)
 # linear_SVC (0, xTrain, yTrain)
-linear_SVC (0.001, xTrain, yTrain,  xTest, yTest)
+linear_SVC (0.01, xTrain, yTrain,  xTest, yTest)
 linear_SVC (10, xTrain, yTrain,  xTest, yTest)
 linear_SVC (100, xTrain, yTrain,  xTest, yTest)
 baseline_mostFrequent(xTrain, yTrain,  xTest, yTest)
