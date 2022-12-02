@@ -1,7 +1,6 @@
 from cProfile import label
 from re import X
 # from statistics import LinearRegression
-
 from tkinter import Y
 import numpy as np
 import pandas as pd
@@ -28,8 +27,8 @@ import warnings
 warnings.filterwarnings("ignore")
 # #CAREFUL
 
-df = pd.read_csv('importantFiles\Elon_class.csv')
-# df = pd.read_csv('/Users/doimasanari/Desktop/MachineLearning-GroupProject/importantFiles/Elon_class.csv')
+# df = pd.read_csv('importantFiles\Elon_class.csv')
+df = pd.read_csv('/Users/doimasanari/Desktop/MachineLearning-GroupProject/importantFiles/Elon_class.csv')
 
 x = df['Tweet']  # construct a matrix containing tweets
 y = df['Class']  # construct a matrix containing -1, 0 or 1
@@ -46,19 +45,6 @@ stop_words = set(stopwords.words('english'))
 tokens = [w for w in tokens if not w in stop_words]
 frequency_dist2 = nltk.FreqDist(tokens)
 
-# from wordcloud import WordCloud
-# wordcloud = WordCloud().generate_from_frequencies(frequency_dist)
-# plt.imshow(wordcloud)
-# plt.axis("off")
-# plt.show()
-
-# wordcloud = WordCloud().generate_from_frequencies(frequency_dist2)
-# plt.imshow(wordcloud)
-# plt.axis("off")
-# plt.show()
-
-# print(tokens)
-# text featuring ends
 print(x)
 
 # xTrain, xTest, yTrain, yTest = train_test_split(x, y, test_size=0.2) # split the data for training and testing.
@@ -183,7 +169,7 @@ def logisticRegression_CV(C, xTrain, yTrain, xTest, yTest): # train data by logi
             Xnew = xTrain[test,:]
         mean_error.append(np.array(temp).mean())
         std_error.append(np.array(temp).std())
-    plot(C, mean_error, std_error)
+    plot(C_values, mean_error, std_error)
         # plt.errorbar(polyDegree, mean_error, yerr=std_error, ecolor ="red", marker = "o", ms=3)
 
 
@@ -271,7 +257,7 @@ def linear_SVC_CV (C, xTrain, yTrain, xTest, yTest):     # train data by SVC
             Xnew = xTrain[test,:]
         mean_error.append(np.array(temp).mean())
         std_error.append(np.array(temp).std())
-    plot(C, mean_error, std_error)
+    plot(C_values, mean_error, std_error)
 
 def baseline_mostFrequent(xTrain, yTrain, xTest, yTest):
     print("\nbaseline mostfrequency classifier__________________________________")
@@ -284,11 +270,14 @@ def baseline_mostFrequent(xTrain, yTrain, xTest, yTest):
     print(confusion_matrix(yTest,ypred))
 
 
-def plot(c, mean_error, std_error):
+def plot(c, mean_error, std_error, isLogistic):
     plt.errorbar(c, mean_error, yerr=std_error, ecolor ="red", marker = "o", ms=3)
     # plt.xlabel("Degree of polynomial")
     plt.ylabel("f1 score")
-    plt.title("Logistic regression")
+    if(isLogistic == True):
+        plt.title("Cross Validation in Logistic regression, C = " + str(c))
+    else:
+        plt.title("Cross Validation in LinearSVC, C = " + str(c))
     plt.show()
 
 
