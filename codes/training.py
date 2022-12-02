@@ -30,7 +30,7 @@ import warnings
 warnings.filterwarnings("ignore")
 # #CAREFUL
 
-df = pd.read_csv('importantFiles\Elon_class.csv')
+df = pd.read_csv('codes\Elon_class1.csv')
 # df = pd.read_csv('/Users/doimasanari/Desktop/MachineLearning-GroupProject/importantFiles/Elon_class.csv')
 
 x = df['Tweet']  # construct a matrix containing tweets
@@ -62,7 +62,7 @@ xTrain = []
 xTest = []
 yTrain = []
 yTest = []
-split = 0.85
+split = 0.95
 
 for i in range(len(x)):
 
@@ -73,28 +73,47 @@ for i in range(len(x)):
         xTest.append(x[i])
         yTest.append(y[i])    
     
+XTrain = []
+XTest = []
+YTrain = []
+YTest = []
+split = 0.95
+
+for i in range(0,len(xTrain)):
+    if(i <= split*len(xTrain)):
+        XTrain.append(xTrain[i])
+        YTrain.append(yTrain[i])  
+    else:
+        XTest.append(xTrain[i])
+        YTest.append(yTrain[i]) 
 
 # print(type(xTrain))
 xTrain = np.array(xTrain)
 xTest = np.array(xTest) #make an array of x test data
 yTrain = np.array(yTrain) #make an array of y train data
 yTest = np.array(yTest) #make an array of y test data
+XTrain = np.array(xTrain)
+XTest = np.array(xTest) #make an array of x test data
+YTrain = np.array(yTrain) #make an array of y train data
+YTest = np.array(yTest) #make an array of y test data
 
 # print(xTrain)
 # print(xTest)
 
-vectorizer = TfidfVectorizer( lowercase=False, ngram_range=(2,2))
+vectorizer = TfidfVectorizer( lowercase=False, ngram_range=(1,2), stop_words = 'english')
 # x = v.fit_transform(df['Review'].values.astype('U'))
 xTrain = vectorizer.fit_transform(xTrain)
 xTest = vectorizer.transform(xTest)
+XTrain = vectorizer.fit_transform(XTrain)
+XTest = vectorizer.transform(XTest)
 test  = vectorizer.get_feature_names_out()
 dfs = pd.DataFrame(test, columns=['Features'])
 # dfs.to_csv("test.csv", encoding='utf_8_sig')
 # dfs.to_csv("importantFiles/test.csv", encoding='utf_8_sig')
-print(test[0:50])
+print(test[1000:1050])
 coef=vectorizer.idf_
 coef_feat = vectorizer.get_feature_names()
-coef,coef_feat = (list(t) for t in zip(*sorted(zip(coef, coef_feat))))
+# coef,coef_feat = (list(t) for t in zip(*sorted(zip(coef, coef_feat))))
 size = len(coef)
 # print(coef[0:50])
 # print(coef[size-50:size])
@@ -114,84 +133,70 @@ def plot_ROC_curve(model, xtrain, ytrain, xtest, ytest):
     
     return visualizer
 
-def logisticRegression_CV(C, xTrain, yTrain, xTest, yTest): # train data by logistic Regression
+def logisticRegression_CV(C, xTrain, yTrain, xTest, yTest, XTrain, YTrain,  XTest, YTest): # train data by logistic Regression
     print("\nLogistic Regression, with C = {}__________________________________".format(C))
     
     #Cross validation of LR
     mean_error=[]
     std_error = []
+    temp=[]
     count = len(C)
     for Ci in C:
         print("progress: {}".format(count))
         count=count-1
         # xTrain = PolynomialFeatures(degree = Ci).fit_transform(x)
         model1 = LogisticRegression(penalty = "l2",C = Ci,multi_class='ovr',class_weight='balanced')
-        #5 fold CV
-        temp=[] 
-        kf = KFold(n_splits=5)
-        ytrain1 = np.array(yTrain)
-        for train, test in kf.split(yTrain): 
             
-            # train one vs all models
-            model1.fit(xTrain[train],ytrain1[train])
+        # train one vs all models
+        model1.fit(XTrain,YTrain)
             
-            #predict one vs all modelss
-            ypred1 = np.array(model1.predict(xTrain[test])) #predicts 1->1 and 0,-1 -> -1
+        #     #predict one vs all modelss
+        ypred1 = np.array(model1.predict(XTest)) #predicts 1->1 and 0,-1 -> -1
     
-            temp.append(f1_score(yTrain[test],ypred1,average = "micro"))
-            
-        mean_error.append(np.array(temp).mean())
-        std_error.append(np.array(temp).std())
+        temp.append(f1_score(YTest,ypred1, average='micro'))
+        
     
-    model1 = LogisticRegression(penalty = "l2",C = 10**5,multi_class='ovr',class_weight='balanced')
+    model1 = LogisticRegression(penalty = "l2",C = 1000,multi_class='ovr',class_weight='balanced')
     model1.fit(xTrain,yTrain)
+    
     ypred = model1.predict(xTest)
-
-
+    print("\nLogistic Regression, with C = {}__________________________________".format(1000))
     print(classification_report(yTest, ypred))
     print(confusion_matrix(yTest,ypred))
+    
     plot_ROC_curve(model1,xTrain, yTrain, xTest, yTest)
-    plot(C, mean_error, std_error, True)
+    plot(C, temp, True)
 
 
-def linear_SVC_CV (C, xTrain, yTrain, xTest, yTest):     # train data by SVC
+def linear_SVC_CV (C, xTrain, yTrain, xTest, yTest, XTrain, YTrain,  XTest, YTest):     # train data by SVC
     print("\nLinear SVC, with C = {}__________________________________".format(C))
     
     #Cross validation of LR
     mean_error=[]
     std_error = []
+    temp=[] 
     count = len(C)
     for Ci in C:
         print("progress: {}".format(count))
         count=count-1
         # xTrain = PolynomialFeatures(degree = Ci).fit_transform(x)
         model1 = LinearSVC(penalty = "l2",C = Ci, multi_class='ovr',class_weight='balanced')
-     
-        #5 fold CV
-        temp=[] 
-        
-        kf = KFold(n_splits=5)
-
-        for train, test in kf.split(yTrain): 
-            ytrain1 = np.array(yTrain)
+        model1.fit(XTrain,YTrain)
             
-            # train one vs all models
-            model1.fit(xTrain[train],ytrain1[train])
-            
-            #predict one vs all modelss
-            ypred1 = np.array(model1.predict(xTrain[test])) #predicts 1->1 and 0,-1 -> -1
+        #     #predict one vs all modelss
+        ypred1 = np.array(model1.predict(XTest)) #predicts 1->1 and 0,-1 -> -1
     
-            temp.append(f1_score(yTrain[test],ypred1,average = "micro"))
-        mean_error.append(np.array(temp).mean())
-        std_error.append(np.array(temp).std())
+        temp.append(f1_score(YTest,ypred1, average='micro'))
+    
 
-    model1 = LinearSVC(penalty = "l2",C = 10**5, multi_class='ovr',class_weight='balanced')
+    model1 = LinearSVC(penalty = "l2",C = 0.5, multi_class='ovr',class_weight='balanced')
     model1.fit(xTrain,yTrain)
     ypred = np.array(model1.predict(xTest))
+    print("\nLinear SVC, with C = {}__________________________________".format(0.5))
     print(classification_report(yTest, ypred))
     print(confusion_matrix(yTest,ypred))
     plot_ROC_curve(model1,xTrain, yTrain, xTest, yTest)
-    plot(C, mean_error, std_error, False)
+    plot(C, temp, False)
 
 def baseline_mostFrequent(xTrain, yTrain, xTest, yTest):
     print("\nbaseline mostfrequency classifier__________________________________")
@@ -205,15 +210,18 @@ def baseline_mostFrequent(xTrain, yTrain, xTest, yTest):
     plot_ROC_curve(dummy,xTrain, yTrain, xTest, yTest)
 
 
-def plot(c, mean_error, std_error, isLogistic):
+def plot(c, mean_error, isLogistic):
     print("ploting...")
-    plt.errorbar(c, mean_error, yerr=std_error, ecolor ="red", marker = "o", ms=3)
+    plt.plot(c, mean_error)
     # plt.xlabel("Degree of polynomial")
     plt.ylabel("f1 score")
+    plt.xlabel("log(C)")
+    plt.xscale('log')
+    plt.legend('Mean')
     if(isLogistic == True):
-        plt.title("Cross Validation in Logistic regression, C = " + str(c))
+        plt.title("Logistic regression, C = " + str(c))
     else:
-        plt.title("Cross Validation in LinearSVC, C = " + str(c))
+        plt.title("LinearSVC, C = " + str(c))
     plt.show()
 
 # def plot_top_features(classifier):
@@ -271,10 +279,10 @@ def plot(c, mean_error, std_error, isLogistic):
 
 
 
+logisticRegression_CV([10**-2,10**-1,10**0,10,100,1000,100000], xTrain, yTrain, xTest, yTest, XTrain, YTrain,  XTest, YTest)
 
 baseline_mostFrequent(xTrain, yTrain,  xTest, yTest)
 
-logisticRegression_CV([10**-2,10**-1,10**0,10,50,10**5], xTrain, yTrain, xTest, yTest)
 # linear_SVC (0, xTrain, yTrain)
-linear_SVC_CV ([10**-2,10**-1,10**0,10,50,10**5], xTrain, yTrain,  xTest, yTest)
+linear_SVC_CV ([10**-2,10**-1,0.5,10,100,1000,100000], xTrain, yTrain,  xTest, yTest, XTrain, YTrain,  XTest, YTest)
 
