@@ -169,7 +169,7 @@ def logisticRegression_CV(C, xTrain, yTrain, xTest, yTest): # train data by logi
             Xnew = xTrain[test,:]
         mean_error.append(np.array(temp).mean())
         std_error.append(np.array(temp).std())
-    plot(C_values, mean_error, std_error)
+    plot(C, mean_error, std_error)
         # plt.errorbar(polyDegree, mean_error, yerr=std_error, ecolor ="red", marker = "o", ms=3)
 
 
