@@ -28,8 +28,8 @@ import warnings
 warnings.filterwarnings("ignore")
 # #CAREFUL
 
-# df = pd.read_csv('importantFiles\Elon_class.csv')
-df = pd.read_csv('/Users/doimasanari/Desktop/MachineLearning-GroupProject/importantFiles/Elon_class.csv')
+df = pd.read_csv('importantFiles\Elon_class.csv')
+# df = pd.read_csv('/Users/doimasanari/Desktop/MachineLearning-GroupProject/importantFiles/Elon_class.csv')
 
 x = df['Tweet']  # construct a matrix containing tweets
 y = df['Class']  # construct a matrix containing -1, 0 or 1
@@ -98,179 +98,180 @@ dfs.to_csv("test.csv", encoding='utf_8_sig')
 # dfs.to_csv("importantFiles/test.csv", encoding='utf_8_sig')
 print(test)
 
-def logisticRegression(C, xTrain, yTrain, xTest, yTest): # train data by logistic Regression
+def logisticRegression_CV(C, xTrain, yTrain, xTest, yTest): # train data by logistic Regression
     print("\nLogistic Regression, with C = {}__________________________________".format(C))
-    YTrain_buffer = []
-    YTest_buffer = []
+    YTrain_buffer = [[],[],[]] 
+    YTest_buffer = [[],[],[]]
 
     #for class = 1
     for i in range(0, len(yTrain)):
         if(yTrain[i]==0):
-            YTrain_buffer.append(-1)
+            YTrain_buffer[0].append(-1)
         else:
-            YTrain_buffer.append(yTrain[i])
+            YTrain_buffer[0].append(yTrain[i])
     for i in range(0,len(yTest)):
         if(yTest[i]==0):
-            YTest_buffer.append(-1)
+            YTest_buffer[0].append(-1)
         else:
-            YTest_buffer.append(yTest[i])
-    model1 = LogisticRegression(C=C,penalty = "l2")
-    model1.fit(xTrain, YTrain_buffer)                       # train data
+            YTest_buffer[0].append(yTest[i])
 
     #for class = 0
     for i in range(0, len(yTrain)):
         if(yTrain[i] == 1):
-            YTrain_buffer[i] = -1
+            YTrain_buffer[1].append(-1)
         elif(yTrain[i]==0):
-            YTrain_buffer[i] = 1
+            YTrain_buffer[1].append(1)
     for i in range(0,len(yTest)):
         if(yTest[i] == 1):
-            YTest_buffer[i] = -1
+            YTest_buffer[1].append(-1)
         elif(yTest[i]==0):
-            YTest_buffer[i] = 1
-    model2 = LogisticRegression(C=C,penalty = "l2")
-    model2.fit(xTrain, YTrain_buffer)                       # train data
+            YTest_buffer[1].append(1)
 
     #for class = -1
     for i in range(0, len(yTrain)):
         if(yTrain[i] == 1):
-            YTrain_buffer[i] = -1
+            YTrain_buffer[2].append(-1)
         elif(yTrain[i] == 0):
-            YTrain_buffer[i] = -1
+            YTrain_buffer[2].append(-1)
         elif(yTrain[i]==-1):
-            YTrain_buffer[i] = 1
+            YTrain_buffer[2].append(1)
     for i in range(0,len(yTest)):
         if(yTest[i] == 1):
-            YTest_buffer[i] = -1
+            YTest_buffer[2].append(-1)
         elif(yTest[i] == 0):
-            YTest_buffer[i] = -1
+            YTest_buffer[2].append(-1)
         elif(yTest[i]==-1):
-            YTest_buffer[i] = 1
-    model3 = LogisticRegression(C=C,penalty = "l2")
-    model3.fit(xTrain, YTrain_buffer)                       # train data
+            YTest_buffer[2].append(1)
 
-    ypred1 = np.array(model1.predict_proba(xTest)) #predicts 1->1 and 0,-1 -> -1
-    ypred2 = np.array(model2.predict_proba(xTest)) #predicts 0->1 and 1,-1 -> -1
-    ypred3 = np.array(model3.predict_proba(xTest)) #predicts -1->1 and 0,1 -> -1
-    ypred = []
-    for i in range(0, len(yTest)):
-        if(ypred1[i][1]>ypred2[i][1] and ypred1[i][1]>ypred3[i][1]):
-            ypred.append(1)
-        elif(ypred2[i][1]>ypred1[i][1] and ypred2[i][1]>ypred3[i][1]):
-            ypred.append(0)
-        elif(ypred3[i][1]>ypred1[i][1] and ypred3[i][1]>ypred2[i][1]):
-            ypred.append(-1)
-        else:
-            ypred.append(0)
-    ypred = np.array(ypred)
-    ypred = ypred.reshape(-1,1)            # make a tidy array of prediction data which contains values, -1, 0 or 1
-    print(classification_report(yTest, ypred))
-    print(confusion_matrix(yTest,ypred))
-
+    #Cross validation of LR
     mean_error=[]
     std_error = []
-    C_values = [0.1, 1, 10, 100]
-    for Ci in C_values:
+    for Ci in C:
         # xTrain = PolynomialFeatures(degree = Ci).fit_transform(x)
-        model = LogisticRegression(penalty = "l2",C = Ci, solver="lbfgs")
+        model1 = LogisticRegression(penalty = "l2",C = Ci, solver="lbfgs")
+        model2 = LogisticRegression(penalty = "l2",C = Ci, solver="lbfgs")
+        model3 = LogisticRegression(penalty = "l2",C = Ci, solver="lbfgs")
         #5 fold CV
-        temp=[]
+        temp=[] 
         kf = KFold(n_splits=5)
-        for train, test in kf.split(xTrain):        
-            model.fit(xTrain[train], yTrain[train])
-            ypred = model.predict(xTrain[test])
+
+        for train, test in kf.split(yTrain): 
+            print(np.array(YTrain_buffer)[0][train])
+            # train one vs all models
+            model1.fit(xTrain[train], np.array(YTrain_buffer)[0][train])
+            model2.fit(xTrain[train], YTrain_buffer[1][train])
+            model3.fit(xTrain[train], YTrain_buffer[2][train])
+            #predict one vs all modelss
+            ypred1 = np.array(model1.predict_proba(xTest)) #predicts 1->1 and 0,-1 -> -1
+            ypred2 = np.array(model2.predict_proba(xTest)) #predicts 0->1 and 1,-1 -> -1
+            ypred3 = np.array(model3.predict_proba(xTest)) #predicts -1->1 and 0,1 -> -1
+            #combine predictions
+            ypred = []
+            for i in range(0, len(yTest)):
+                if(ypred1[i][1]>ypred2[i][1] and ypred1[i][1]>ypred3[i][1]):
+                    ypred.append(1)
+                elif(ypred2[i][1]>ypred1[i][1] and ypred2[i][1]>ypred3[i][1]):
+                    ypred.append(0)
+                elif(ypred3[i][1]>ypred1[i][1] and ypred3[i][1]>ypred2[i][1]):
+                    ypred.append(-1)
+                else:
+                    ypred.append(0)
+            ypred = np.array(ypred)
+            ypred = ypred.reshape(-1,1)            # make a tidy array of prediction data which contains values, -1, 0 or 1
+            #score one vs all model predictions
             temp.append(f1_score(yTrain[test],ypred,average = "micro"))
             Xnew = xTrain[test,:]
         mean_error.append(np.array(temp).mean())
         std_error.append(np.array(temp).std())
-    plot(C_values, mean_error, std_error)
+    plot(C, mean_error, std_error)
         # plt.errorbar(polyDegree, mean_error, yerr=std_error, ecolor ="red", marker = "o", ms=3)
 
 
-def linear_SVC (C, xTrain, yTrain, xTest, yTest):     # train data by SVC
+def linear_SVC_CV (C, xTrain, yTrain, xTest, yTest):     # train data by SVC
     print("\nLinear SVC, with C = {}__________________________________".format(C))
-    YTrain_buffer = []
-    YTest_buffer = []
+    YTrain_buffer = [[],[],[]]
+    YTest_buffer = [[],[],[]]
 
     #for class = 1
     for i in range(0, len(yTrain)):
         if(yTrain[i]==0):
-            YTrain_buffer.append(-1)
+            YTrain_buffer[0].append(-1)
         else:
-            YTrain_buffer.append(yTrain[i])
+            YTrain_buffer[0].append(yTrain[i])
     for i in range(0,len(yTest)):
         if(yTest[i]==0):
-            YTest_buffer.append(-1)
+            YTest_buffer[0].append(-1)
         else:
-            YTest_buffer.append(yTest[i])
-    model1 = LinearSVC(C=C, penalty= "l2")
-    model1.fit(xTrain, YTrain_buffer)                       # train data
+            YTest_buffer[0].append(yTest[i])
 
     #for class = 0
     for i in range(0, len(yTrain)):
         if(yTrain[i] == 1):
-            YTrain_buffer[i] = -1
+            YTrain_buffer[1].append(-1)
         elif(yTrain[i]==0):
-            YTrain_buffer[i] = 1
+            YTrain_buffer[1].append(1)
     for i in range(0,len(yTest)):
         if(yTest[i] == 1):
-            YTest_buffer[i] = -1
+            YTest_buffer[1].append(-1)
         elif(yTest[i]==0):
-            YTest_buffer[i] = 1
-    model2 = LinearSVC(C=C,penalty = "l2")
-    model2.fit(xTrain, YTrain_buffer)                       # train data
+            YTest_buffer[1].append(1)
 
     #for class = -1
     for i in range(0, len(yTrain)):
         if(yTrain[i] == 1):
-            YTrain_buffer[i] = -1
+            YTrain_buffer[2].append(-1)
         elif(yTrain[i] == 0):
-            YTrain_buffer[i] = -1
+            YTrain_buffer[2].append(-1)
         elif(yTrain[i]==-1):
-            YTrain_buffer[i] = 1
+            YTrain_buffer[2].append(1)
     for i in range(0,len(yTest)):
         if(yTest[i] == 1):
-            YTest_buffer[i] = -1
+            YTest_buffer[2].append(-1)
         elif(yTest[i] == 0):
-            YTest_buffer[i] = -1
+            YTest_buffer[2].append(-1)
         elif(yTest[i]==-1):
-            YTest_buffer[i] = 1
-    model3 = LinearSVC(C=C,penalty = "l2")
-    model3.fit(xTrain, YTrain_buffer)                       # train data
+            YTest_buffer[2].append(1)
 
-    ypred1 = np.array(model1._predict_proba_lr(xTest)) #predicts 1->1 and 0,-1 -> -1
-    ypred2 = np.array(model2._predict_proba_lr(xTest)) #predicts 0->1 and 1,-1 -> -1
-    ypred3 = np.array(model3._predict_proba_lr(xTest)) #predicts -1->1 and 0,1 -> -1
-    ypred = []
-    for i in range(0, len(yTest)):
-        if(ypred1[i][1]>ypred2[i][1] and ypred1[i][1]>ypred3[i][1]):
-            ypred.append(1)
-        elif(ypred2[i][1]>ypred1[i][1] and ypred2[i][1]>ypred3[i][1]):
-            ypred.append(0)
-        elif(ypred3[i][1]>ypred1[i][1] and ypred3[i][1]>ypred2[i][1]):
-            ypred.append(-1)
-        else:
-            ypred.append(0)
-    ypred = np.array(ypred)
-    ypred = ypred.reshape(-1,1)            # make a tidy array of prediction data which contains values, -1, 0 or 1
-    print(classification_report(yTest, ypred))
-    print(confusion_matrix(yTest,ypred))
+    #Cross validation of LR
     mean_error=[]
     std_error = []
-    C_values = [0.1, 1, 10, 100]
-    for Ci in C_values:
-        model = LinearSVC(C=C, penalty= "l2").fit(xTrain, yTrain)
+    for Ci in C:
+        # xTrain = PolynomialFeatures(degree = Ci).fit_transform(x)
+        model1 = LinearSVC(penalty = "l2",C = Ci)
+        model2 = LinearSVC(penalty = "l2",C = Ci)
+        model3 = LinearSVC(penalty = "l2",C = Ci)
         #5 fold CV
         temp=[]
         kf = KFold(n_splits=5)
         for train, test in kf.split(xTrain):        
-            model.fit(xTrain[train], yTrain[train])
-            ypred = model.predict(xTrain[test])
+
+            # train one vs all models
+            model1.fit(xTrain[train], YTrain_buffer[0][train])
+            model2.fit(xTrain[train], YTrain_buffer[1][train])
+            model3.fit(xTrain[train], YTrain_buffer[2][train])
+            #predict one vs all modelss
+            ypred1 = np.array(model1.predict_proba(xTest)) #predicts 1->1 and 0,-1 -> -1
+            ypred2 = np.array(model2.predict_proba(xTest)) #predicts 0->1 and 1,-1 -> -1
+            ypred3 = np.array(model3.predict_proba(xTest)) #predicts -1->1 and 0,1 -> -1
+            #combine predictions
+            ypred = []
+            for i in range(0, len(yTest)):
+                if(ypred1[i][1]>ypred2[i][1] and ypred1[i][1]>ypred3[i][1]):
+                    ypred.append(1)
+                elif(ypred2[i][1]>ypred1[i][1] and ypred2[i][1]>ypred3[i][1]):
+                    ypred.append(0)
+                elif(ypred3[i][1]>ypred1[i][1] and ypred3[i][1]>ypred2[i][1]):
+                    ypred.append(-1)
+                else:
+                    ypred.append(0)
+            ypred = np.array(ypred)
+            ypred = ypred.reshape(-1,1)            # make a tidy array of prediction data which contains values, -1, 0 or 1
+            #score one vs all model predictions
             temp.append(f1_score(yTrain[test],ypred,average = "micro"))
             Xnew = xTrain[test,:]
         mean_error.append(np.array(temp).mean())
         std_error.append(np.array(temp).std())
-    plot(C_values, mean_error, std_error)
+    plot(C, mean_error, std_error)
 
 def baseline_mostFrequent(xTrain, yTrain, xTest, yTest):
     print("\nbaseline mostfrequency classifier__________________________________")
@@ -322,11 +323,8 @@ def plot(c, mean_error, std_error):
 # plt.show()
 
 
-logisticRegression(0.1, xTrain, yTrain, xTest, yTest)
+logisticRegression_CV([0.1,1,10,100], xTrain, yTrain, xTest, yTest)
 # linear_SVC (0, xTrain, yTrain)
-linear_SVC (0.001, xTrain, yTrain,  xTest, yTest)
-linear_SVC (0.1, xTrain, yTrain,  xTest, yTest)
-linear_SVC (1, xTrain, yTrain,  xTest, yTest)
-linear_SVC (70, xTrain, yTrain,  xTest, yTest)
-linear_SVC (90, xTrain, yTrain,  xTest, yTest)
+linear_SVC_CV ([0.1,1,10,100], xTrain, yTrain,  xTest, yTest)
+
 baseline_mostFrequent(xTrain, yTrain,  xTest, yTest)
