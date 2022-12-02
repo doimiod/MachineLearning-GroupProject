@@ -1,5 +1,0 @@
-[twitter]
-api_key = WHSgi0jT82flMksNr9WUbqaK3
-api_key_secret = YovXxnX0DJuJJX1BvJLgLHrV5bQ5UmjDFMwQaZSbwCnmSOXh1C
-access_token = 1439151678985580546-Rle1Ux5qtS3CjRsFShm9JTpATcQkBq
-access_token_secret = 7V4Z6FRYnIzHAVqZeaR5o4cwXvGtJf47weF2BzX5QEEd7
