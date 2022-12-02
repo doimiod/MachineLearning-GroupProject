@@ -27,8 +27,8 @@ import warnings
 warnings.filterwarnings("ignore")
 # #CAREFUL
 
-df = pd.read_csv('importantFiles\Elon_class.csv')
-# df = pd.read_csv('/Users/doimasanari/Desktop/MachineLearning-GroupProject/importantFiles/Elon_class.csv')
+# df = pd.read_csv('importantFiles\Elon_class.csv')
+df = pd.read_csv('/Users/doimasanari/Desktop/MachineLearning-GroupProject/codes/Elon_class.csv')
 
 x = df['Tweet']  # construct a matrix containing tweets
 y = df['Class']  # construct a matrix containing -1, 0 or 1
