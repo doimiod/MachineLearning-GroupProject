@@ -93,8 +93,9 @@ def logisticRegression_CV(C, xTrain, yTrain, xTest, yTest): # train data by logi
     count = 0
     for Ci in C:
         print("progress: {}".format(count))
+        count=count+1
         # xTrain = PolynomialFeatures(degree = Ci).fit_transform(x)
-        model1 = LogisticRegression(penalty = "l1",C = Ci, solver="saga",multi_class='ovr')
+        model1 = LogisticRegression(penalty = "l2",C = Ci,multi_class='ovr')
         #5 fold CV
         temp=[] 
         kf = KFold(n_splits=5)
@@ -111,11 +112,13 @@ def logisticRegression_CV(C, xTrain, yTrain, xTest, yTest): # train data by logi
             
         mean_error.append(np.array(temp).mean())
         std_error.append(np.array(temp).std())
-    plot(C, mean_error, std_error, True)
+    
 
-    ypred = np.array(model1.predict(xTest))
-    print(classification_report(xTest, ypred))
-    print(confusion_matrix(xTest,ypred))
+    model1.fit(xTrain,yTrain)
+    ypred = model1.predict(xTest)
+    print(classification_report(yTest, ypred))
+    print(confusion_matrix(yTest,ypred))
+    plot(C, mean_error, std_error, True)
 
 
 def linear_SVC_CV (C, xTrain, yTrain, xTest, yTest):     # train data by SVC
@@ -124,9 +127,10 @@ def linear_SVC_CV (C, xTrain, yTrain, xTest, yTest):     # train data by SVC
     #Cross validation of LR
     mean_error=[]
     std_error = []
-    count = 0
+    count = 1
     for Ci in C:
         print("progress: {}".format(count))
+        count=count+1
         # xTrain = PolynomialFeatures(degree = Ci).fit_transform(x)
         model1 = LinearSVC(penalty = "l2",C = Ci, multi_class='ovr')
      
@@ -147,11 +151,13 @@ def linear_SVC_CV (C, xTrain, yTrain, xTest, yTest):     # train data by SVC
             temp.append(f1_score(yTrain[test],ypred1,average = "micro"))
         mean_error.append(np.array(temp).mean())
         std_error.append(np.array(temp).std())
-    plot(C, mean_error, std_error, False)
+    
 
+    model1.fit(xTrain,yTrain)
     ypred = np.array(model1.predict(xTest))
-    print(classification_report(xTest, ypred))
-    print(confusion_matrix(xTest,ypred))
+    print(classification_report(yTest, ypred))
+    print(confusion_matrix(yTest,ypred))
+    plot(C, mean_error, std_error, False)
 
 def baseline_mostFrequent(xTrain, yTrain, xTest, yTest):
     print("\nbaseline mostfrequency classifier__________________________________")
@@ -165,6 +171,7 @@ def baseline_mostFrequent(xTrain, yTrain, xTest, yTest):
 
 
 def plot(c, mean_error, std_error, isLogistic):
+    print("ploting...")
     plt.errorbar(c, mean_error, yerr=std_error, ecolor ="red", marker = "o", ms=3)
     # plt.xlabel("Degree of polynomial")
     plt.ylabel("f1 score")
@@ -173,6 +180,7 @@ def plot(c, mean_error, std_error, isLogistic):
     else:
         plt.title("Cross Validation in LinearSVC, C = " + str(c))
     plt.show()
+
 
 
 # mean_error=[]
@@ -196,14 +204,7 @@ def plot(c, mean_error, std_error, isLogistic):
 #     std_error.append(np.array(temp).std())
 
 
-# #CHOSEN ORDER OF POLYNOMIAL
-# deg = 2
-# #plot data
-# plt.errorbar(polyDegree, mean_error, yerr=std_error, ecolor ="red", marker = "o", ms=3)
-# plt.xlabel("Degree of polynomial")
-# plt.ylabel("f1 score")
-# plt.title("Logistic regression")
-# plt.show()
+
 
 
 logisticRegression_CV([0.1,1,10,100], xTrain, yTrain, xTest, yTest)
